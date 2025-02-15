@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<robot name="Selene">
+  <!-- #################################################   LINKS   ###################################################### -->
+
+  <!-- Torso -->
+  <link name="base_link">
+    <inertial>
+      <origin xyz="-0.0452 -0.03692 0.6860" rpy="0 0 0" />
+      <mass value="3.7818" />
+      <inertia ixx="0.0290" ixy="-2.3495E-05" ixz="0.0020" iyy="0.02825" iyz="0.0003"
+              izz="0.00985571938524551" />
+      </inertial>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="file:///$(find humanoid_robot)/meshes/base_link.STL" />
+      </geometry>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="file:///$(find humanoid_robot)/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+
+  <!-- **************************   Lower Body   ***************************** -->
+  <!-- ***************   Thighs   *************** -->
+  <!-- Left Thigh -->
+  <link name="Thigh_Left">
+    <inertial>
+      <origin xyz="0.081719563520279 -0.0391428890374864 -0.13627885500216" rpy="0 0 0" />
+      <mass value="1.71254429261779" />
+      <inertia ixx="0.001" ixy="-4.5068E-05" ixz="-6.2472E-05" iyy="0.0099" iyz="-0.0005" izz="0.0020" />
+    </inertial>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="file:///$(find humanoid_robot)/meshes/Thigh_Left.STL" />
+      </geometry>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="file:///$(find humanoid_robot)/meshes/Thigh_Left.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Right Thigh -->
+  <link name="Thigh_Right">
+    <inertial>
+      <origin xyz="0.0888052949733293 0.0314961497986593 -0.136423422057645" rpy="0 0 0" />
+      <mass value="1.71247209269631" />
+      <inertia ixx="0.0099" ixy="5.3037E-05" ixz="0.0009" iyy="0.001" iyz="-6.1135E-05" izz="0.0021" />
+    </inertial>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="file:///$(find humanoid_robot)/meshes/Thigh_Right.STL" />
+      </geometry>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="file:///$(find humanoid_robot)/meshes/Thigh_Right.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- ***************   Calves   *************** -->
+  <!-- Left Calf -->
+  <link name="Calf_Left">
+    <inertial>
+      <origin xyz="0.0173979411917868 -0.0338144792667686 -0.0731372184216896" rpy="0 0 0" />
+      <mass value="0.347244355232965" />
+      <inertia ixx="0.0006" ixy="7.6125E-06" ixz="0.0001" iyy="0.0007" iyz="-2.9866E-05" izz="0.0002" />
+    </inertial>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="file:///$(find humanoid_robot)/meshes/Calf_Left.STL" />
+      </geometry>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="file:///$(find humanoid_robot)/meshes/Calf_Left.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Right Calf -->
+  <link name="Calf_Right">
+    <inertial>
+      <origin xyz="0.00779707931853468 0.023146814060122 -0.0767911675062449" rpy="0 0 0" />
+      <mass value="0.347222968435987" />
+      <inertia ixx="0.0007" ixy="2.6081E-06" ixz="8.9863E-05" iyy="0.0007" iyz="-2.5986E-06" izz="0.0001" />
+    </inertial>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="file:///$(find humanoid_robot)/meshes/Calf_Right.STL" />
+      </geometry>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="file:///$(find humanoid_robot)/meshes/Calf_Right.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- ***************   Feet   *************** -->
+  <!-- Left Feet -->
+  <link name="Feet_Left">
+    <inertial>
+      <origin xyz="0.028640881737326 -0.0202428805466691 -0.0395008420952253" rpy="0 0 0" />
+      <mass value="0.118601460811448" />
+      <inertia ixx="3.8556E-05" ixy="1.6021E-06" ixz="2.3239E-05" iyy="0.0001" iyz="-8.7105E-07" izz="9.2295E-05" />
+    </inertial>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="file:///$(find humanoid_robot)/meshes/Feet_Left.STL" />
+      </geometry>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="file:///$(find humanoid_robot)/meshes/Feet_Left.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Right Foot -->
+  <link name="Feet_Right">
+    <inertial>
+      <origin xyz="0.0277053845375423 0.018841635703092 -0.0398575556384261" rpy="0 0 0" />
+      <mass value="0.118594865670653" />
+      <inertia ixx="3.8328E-05" ixy="-1.0342E-05" ixz="2.0934E-05" iyy="0.0001" iyz="2.6972E-06" izz="9.4009E-05" />
+    </inertial>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="file:///$(find humanoid_robot)/meshes/Feet_Right.STL" />
+      </geometry>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="file:///$(find humanoid_robot)/meshes/Feet_Right.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- **************************   Upper Body   ***************************** -->
+  <!-- Head -->
+  <link name="Head">
+    <inertial>
+      <origin xyz="0.0657298187674247 6.53552728602236E-08 -0.000338525324300232" rpy="0 0 0" />
+      <mass value="0.020475566345367" />
+      <inertia ixx="2.4886E-06" ixy="1.5893E-11" ixz="-1.5359E-11" iyy="2.4886E-06" iyz="1.0524E-12" izz="2.3024E-06" />
+    </inertial>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="file:///$(find humanoid_robot)/meshes/Head.STL" />
+      </geometry>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="file:///$(find humanoid_robot)/meshes/Head.STL" />
+      </geometry>
+    </collision>
+  </link>
+  
+  <!-- ***************   Shoulders   *************** -->
+  <!-- Left Shoulder -->
+  <link name="Shoulder_Left">
+    <inertial>
+      <origin xyz="0.031104428052207 -0.028471737229105 -0.0683054849796777" rpy="0 0 0" />
+      <mass value="0.173961442932148" />
+      <inertia ixx="0.0003" ixy="2.9413E-07" ixz="2.1801E-06" iyy="0.0003" iyz="-4.0249E-05" izz="4.9527E-05" />
+    </inertial>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="file:///$(find humanoid_robot)/meshes/Shoulder_Left.STL" />
+      </geometry>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="file:///$(find humanoid_robot)/meshes/Shoulder_Left.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Right Shoulder -->
+  <link name="Shoulder_Right">
+    <inertial>
+      <origin xyz="0.031081924358149 0.0284724548379816 -0.0683071214588619" rpy="0 0 0" />
+      <mass value="0.173956563774839" />
+      <inertia ixx="0.0003" ixy="-2.8437E-07" ixz="2.1182E-06" iyy="0.0003" iyz="4.0250E-05" izz="4.9524E-05" />
+    </inertial>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="file:///$(find humanoid_robot)/meshes/Shoulder_Right.STL" />
+      </geometry>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="file:///$(find humanoid_robot)/meshes/Shoulder_Right.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- ***************   Elbows   *************** -->
+  <!-- Left Elbow -->
+  <link name="Elbow_Left">
+    <inertial>
+      <origin xyz="0.00946389031742489 -0.0392119099461989 -0.0608873577382447" rpy="0 0 0" />
+      <mass value="0.0827614157852023" />
+      <inertia ixx="0.0001" ixy="9.6111E-07" ixz="2.2286E-05" iyy="0.0001" iyz="-5.3575E-06" izz="1.4795E-05" />
+    </inertial>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="file:///$(find humanoid_robot)/meshes/Elbow_Left.STL" />
+      </geometry>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="file:///$(find humanoid_robot)/meshes/Elbow_Left.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Right Elbow -->
+  <link name="Elbow_Right">
+    <inertial>
+      <origin xyz="0.009461613252983 0.0392109794038045 -0.060891809436463" rpy="0 0 0" />
+      <mass value="0.0827455082429507" />
+      <inertia ixx="0.0001" ixy="-9.6109E-07" ixz="2.2275E-05" iyy="0.0001" iyz="5.3601E-06" izz="1.479E-05" />
+    </inertial>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="file:///$(find humanoid_robot)/meshes/Elbow_Right.STL" />
+      </geometry>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="file:///$(find humanoid_robot)/meshes/Elbow_Right.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+<!-- #################################################   JOINTS   ###################################################### -->
+
+  <!-- **************************   Lower Body   ***************************** -->
+  <!-- Torso and Left Thigh -->
+  <joint name="TorsoThigh_Left" type="continuous">
+    <origin xyz="-0.11512 -0.065021 0.55768" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="Thigh_Left" />
+    <axis xyz="1 0 0" />
+    <limit effort="10" velocity="5" lower="-1.0" upper="1.0"/>
+  </joint>
+
+  <!-- Left Thigh and Calf -->
+  <joint name="ThighCalf_Left" type="continuous">
+    <origin xyz="0.05817 -0.01741 -0.31668" rpy="0 0 0" />
+    <parent link="Thigh_Left" />
+    <child link="Calf_Left" />
+    <axis xyz="0.0094744 0.99913 -0.040492" />
+  </joint>
+
+  <!-- Left Calf and Foot -->
+  <joint name="CalfFeet_Left" type="continuous">
+    <origin xyz="0.038123 -0.020637 -0.17389" rpy="0 0 0" />
+    <parent link="Calf_Left" />
+    <child link="Feet_Left" />
+    <axis xyz="0.0094744 0.99913 -0.040492" />
+  </joint>
+
+  <!-- Torso and Right Thigh -->
+  <joint name="TorsoThigh_Right" type="continuous">
+    <origin xyz="-0.11209 -0.0024223 0.55516" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="Thigh_Right" />
+    <axis xyz="-1 0 0" />
+  </joint>
+
+  <!-- Right Thigh and Calf -->
+  <joint name="ThighCalf_Right" type="continuous">
+    <origin xyz="0.091715 -0.00051607 -0.31612" rpy="0 0 0" />
+    <parent link="Thigh_Right" />
+    <child link="Calf_Right" />
+    <axis xyz="-0.15989 0.98597 -0.047997" />
+  </joint>
+
+  <!-- Right Calf and Feet -->
+  <joint name="CalfFeet_Right" type="continuous">
+    <origin xyz="0.022955 0.0053424 -0.17745" rpy="0 0 0" />
+    <parent link="Calf_Right" />
+    <child link="Feet_Right" />
+    <axis xyz="-0.15989 0.98597 -0.047997" />
+  </joint>
+
+  <!-- **************************   Upper Body   ***************************** -->
+  <!-- Neck -->
+  <joint name="Neck" type="continuous">
+    <origin xyz="-0.14524 -0.037441 0.83602" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="Head" />
+    <axis xyz="1 0 0" />
+  </joint>
+
+  <!-- Torso and Left Shoulder -->
+  <joint name="TorsoShoulder_Left" type="continuous">
+    <origin xyz="-0.099564 -0.11999 0.79337" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="Shoulder_Left" />
+    <axis xyz="-1 0 0" />
+  </joint>
+
+  <!-- Left Shoulder and Elbow -->
+  <joint name="ShoulderElbow_Left" type="continuous">
+    <origin xyz="0.030403 0.00076605 -0.14862" rpy="0 0 0" />
+    <parent link="Shoulder_Left" />
+    <child link="Elbow_Left" />
+    <axis xyz="-0.025189 0.99968 0" />
+  </joint>
+
+  <!-- Torso and Right Shoulder -->
+  <joint name="TorsoShoulder_Right" type="continuous">
+    <origin xyz="-0.09949 0.043597 0.79036" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="Shoulder_Right" />
+    <axis xyz="-1 0 0" />
+  </joint>
+
+  <!-- Right Shoulder and Elbow -->
+  <joint name="ShoulderElbow_Right" type="continuous">
+    <origin xyz="0.030359 -0.00076495 -0.14862" rpy="0 0 0" />
+    <parent link="Shoulder_Right" />
+    <child link="Elbow_Right" />
+    <axis xyz="0.025189 0.99968 0" />
+  </joint>
+
+
+</robot>
