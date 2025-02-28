@@ -43,9 +43,8 @@ def generate_launch_description():
         executable='spawn_entity.py',
         arguments=['-topic', '/robot_description', '-entity', 'robot', '-x', '0', '-y', '0', '-z', '0'],  # Adjust the z value
         output='screen'
-    )
-
-
+    )           
+    
     return LaunchDescription([
         DeclareLaunchArgument(name='headless', default_value='true', description='Set to "false" to run headless.'),
         gazebo,
