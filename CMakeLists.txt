@@ -22,7 +22,7 @@ if(BUILD_TESTING)
 endif()
 
 
-install(DIRECTORY meshes urdf launch
+install(DIRECTORY meshes urdf worlds launch
 DESTINATION share/${PROJECT_NAME})
 
 

@@ -309,8 +309,15 @@
     </collision>
   </link>
 
+  <link name="world"/>
+
 
   <!-- #######################################################   JOINTS   ################################################################### -->
+  <joint name="Hang" type="fixed">
+    <parent link="world"/>
+    <child link="base_link"/>
+  </joint>
+
   <!-- Neck -->
   <joint name="Neck" type="continuous">
     <origin xyz="-0.044306 0.010853 0.81525" rpy="0 0 0" />
