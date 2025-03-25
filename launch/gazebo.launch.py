@@ -2,6 +2,7 @@ from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
+from launch.substitutions import Command
 import os
 from ament_index_python.packages import get_package_share_directory
 
@@ -9,12 +10,14 @@ def generate_launch_description():
 
     pkg_path = get_package_share_directory("humanoid_robot")  # Your package name
     sdf_file = os.path.join(pkg_path, 'urdf', 'robot.sdf')
+    world_file = os.path.join(pkg_path, 'worlds', 'custom.world')
 
     # Launch Gazebo
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             [os.path.join(get_package_share_directory('gazebo_ros'), 'launch'), '/gazebo.launch.py']
-        )
+        ),
+        launch_arguments={'world': world_file}.items()  #'verbose': 'true', 
     )
 
     # Spawn the robot

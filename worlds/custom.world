@@ -8,7 +8,7 @@
     
     <gui>
       <camera name="gzclient_camera">
-        <pose>.8744 -6.5353 2.6842 0 0.2396 2.0882</pose>
+        <pose>2.112227 -0.721824 1.194857 0 0.295601 2.816199</pose>
       </camera>
     </gui>
 
@@ -31,9 +31,12 @@
       <direction>-0.5 0.5 -1</direction>
     </light>
 
-    <physics type="ode">
-      <gravity>0 0 -9.8</gravity>
+    <physics name="dart_physics" type="dart">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1</real_time_factor>
+      <real_time_update_rate>1000</real_time_update_rate>
     </physics>
+
 
     <plugin name="world_plugin" filename="libworld_plugin.so"/>
     

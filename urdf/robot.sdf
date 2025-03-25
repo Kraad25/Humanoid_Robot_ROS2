@@ -371,6 +371,16 @@
           </mesh>
         </geometry>
       </collision>
+
+      <sensor name="contact_sensor" type="contact">
+        <update_rate>100</update_rate>  <!-- How often it updates -->
+        <always_on>true</always_on>
+        <visualize>true</visualize>
+        <contact>
+          <collision>Foot_Left_collision</collision>  <!-- The part that detects contact -->
+        </contact>
+        <plugin name="contact_plugin" filename="libcontact_plugin.so"/>
+      </sensor>
     </link>
 
     <!-- Right Foot --> 
@@ -404,7 +414,24 @@
           </mesh>
         </geometry>
       </collision>
+
+      <sensor name="contact_sensor" type="contact">
+        <update_rate>100</update_rate>  <!-- How often it updates -->
+        <always_on>true</always_on>
+        <visualize>true</visualize>
+        <contact>
+          <collision>Foot_Right_collision</collision>  <!-- The part that detects contact -->
+        </contact>
+        <plugin name="contact_plugin" filename="libcontact_plugin.so"/>
+      </sensor>
     </link>
+
+    <gazebo reference="Neck">
+      <sensor name="force_torque_sensor" type="force_torque">
+        <update_rate>30.0</update_rate>
+        <topic>/force_torque_data</topic>
+      </sensor>
+    </gazebo>
 
     <!-- #######################################################   JOINTS   ################################################################### -->
     <!-- World and Base Joint (To Hang the robot and test the Joints) -->
@@ -441,6 +468,19 @@
             <friction>0.5</friction>
         </dynamics>
       </axis2>
+
+      <sensor name="force_torque_sensor" type="force_torque">
+        <pose degrees="true">0 0 0.0   30 0 0</pose>
+        <update_rate>100</update_rate>
+        <always_on>true</always_on>
+        <visualize>true</visualize>
+        <topic>force_torque1</topic>
+        <force_torque>
+          <frame>child</frame>
+          <measure_direction>parent_to_child</measure_direction>
+        </force_torque>
+      </sensor>
+
     </joint>
 
     <!-- Left Shoulder and Torso -->
@@ -469,6 +509,18 @@
             <friction>0.5</friction>
         </dynamics>
       </axis2>
+
+      <sensor name="force_torque_sensor" type="force_torque">
+        <pose degrees="true">0 0 0.0   30 0 0</pose>
+        <update_rate>100</update_rate>
+        <always_on>true</always_on>
+        <visualize>true</visualize>
+        <topic>force_torque2</topic>
+        <force_torque>
+          <frame>child</frame>
+          <measure_direction>parent_to_child</measure_direction>
+        </force_torque>
+      </sensor>
     </joint>
 
     <!-- Left Elbow and Shoulder -->
@@ -477,15 +529,27 @@
       <parent>Shoulder_Left</parent>
       <child>Elbow_Left</child>
       <axis>
-          <xyz>0 1 0</xyz>
-          <limit>
-              <lower>-1.74533</lower>    <!-- -20 - 100 deg-->
-              <upper>0.349066</upper>
-          </limit>
-          <dynamics>
-              <friction>0.5</friction>
-          </dynamics>
-        </axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+            <lower>-1.74533</lower>    <!-- -20 - 100 deg-->
+            <upper>0.349066</upper>
+        </limit>
+        <dynamics>
+            <friction>0.5</friction>
+        </dynamics>
+      </axis>
+
+      <sensor name="force_torque_sensor" type="force_torque">
+        <pose degrees="true">0 0 0.0   30 0 0</pose>
+        <update_rate>100</update_rate>
+        <always_on>true</always_on>
+        <visualize>true</visualize>
+        <topic>force_torque3</topic>
+        <force_torque>
+          <frame>child</frame>
+          <measure_direction>parent_to_child</measure_direction>
+        </force_torque>
+      </sensor>
     </joint>
 
     <!-- Right Shoulder and Torso -->
@@ -514,6 +578,18 @@
             <friction>0.5</friction>
         </dynamics>
       </axis2>
+
+      <sensor name="force_torque_sensor" type="force_torque">
+        <pose degrees="true">0 0 0.0   30 0 0</pose>
+        <update_rate>100</update_rate>
+        <always_on>true</always_on>
+        <visualize>true</visualize>
+        <topic>force_torque4</topic>
+        <force_torque>
+          <frame>child</frame>
+          <measure_direction>parent_to_child</measure_direction>
+        </force_torque>
+      </sensor>
     </joint>
 
     <!-- Right Elbow and Shoulder -->
@@ -530,7 +606,19 @@
         <dynamics>
             <friction>0.5</friction>
         </dynamics>
-        </axis>
+      </axis>
+
+      <sensor name="force_torque_sensor" type="force_torque">
+        <pose degrees="true">0 0 0.0   30 0 0</pose>
+        <update_rate>100</update_rate>
+        <always_on>true</always_on>
+        <visualize>true</visualize>
+        <topic>force_torque5</topic>
+        <force_torque>
+          <frame>child</frame>
+          <measure_direction>parent_to_child</measure_direction>
+        </force_torque>
+      </sensor>
     </joint>
 
     <!-- Left Thigh and Torso -->
@@ -559,6 +647,18 @@
             <friction>0.5</friction>
         </dynamics>
       </axis2>
+
+      <sensor name="force_torque_sensor" type="force_torque">
+        <pose degrees="true">0 0 0.0   30 0 0</pose>
+        <update_rate>100</update_rate>
+        <always_on>true</always_on>
+        <visualize>true</visualize>
+        <topic>force_torque6</topic>
+        <force_torque>
+          <frame>child</frame>
+          <measure_direction>parent_to_child</measure_direction>
+        </force_torque>
+      </sensor>
     </joint>
 
     <!-- Left Calf and Thigh -->
@@ -576,6 +676,18 @@
             <friction>0.5</friction>
         </dynamics>
       </axis>
+
+      <sensor name="force_torque_sensor" type="force_torque">
+        <pose degrees="true">0 0 0.0   30 0 0</pose>
+        <update_rate>100</update_rate>
+        <always_on>true</always_on>
+        <visualize>true</visualize>
+        <topic>force_torque7</topic>
+        <force_torque>
+          <frame>child</frame>
+          <measure_direction>parent_to_child</measure_direction>
+        </force_torque>
+      </sensor>
     </joint>
 
     <!-- Left Foot and Calf -->
@@ -593,6 +705,18 @@
             <friction>0.5</friction>
         </dynamics>
       </axis>
+
+      <sensor name="force_torque_sensor" type="force_torque">
+        <pose degrees="true">0 0 0.0   30 0 0</pose>
+        <update_rate>100</update_rate>
+        <always_on>true</always_on>
+        <visualize>true</visualize>
+        <topic>force_torque8</topic>
+        <force_torque>
+          <frame>child</frame>
+          <measure_direction>parent_to_child</measure_direction>
+        </force_torque>
+      </sensor>
     </joint>
 
     <!-- Right Thigh and Torso -->
@@ -620,6 +744,18 @@
             <friction>0.5</friction>
         </dynamics>
       </axis2>
+      
+      <sensor name="force_torque_sensor" type="force_torque">
+        <pose degrees="true">0 0 0.0   30 0 0</pose>
+        <update_rate>100</update_rate>
+        <always_on>true</always_on>
+        <visualize>true</visualize>
+        <topic>force_torque9</topic>
+        <force_torque>
+          <frame>child</frame>
+          <measure_direction>parent_to_child</measure_direction>
+        </force_torque>
+      </sensor>
     </joint>
 
     <!-- Right Calf and Thigh -->
@@ -637,6 +773,18 @@
             <friction>0.5</friction>
         </dynamics>
       </axis>
+
+      <sensor name="force_torque_sensor" type="force_torque">
+        <pose degrees="true">0 0 0.0   30 0 0</pose>
+        <update_rate>100</update_rate>
+        <always_on>true</always_on>
+        <visualize>true</visualize>
+        <topic>force_torque10</topic>
+        <force_torque>
+          <frame>child</frame>
+          <measure_direction>parent_to_child</measure_direction>
+        </force_torque>
+      </sensor>
     </joint>
 
     <!-- Right Foot and Calf -->
@@ -653,8 +801,95 @@
         <dynamics>
             <friction>0.5</friction>
         </dynamics>
-      </axis> 
+      </axis>
+
+      <sensor name="force_torque_sensor" type="force_torque">
+        <pose degrees="true">0 0 0.0   30 0 0</pose>
+        <update_rate>100</update_rate>
+        <always_on>true</always_on>
+        <visualize>true</visualize>
+        <topic>force_torque11</topic>
+        <force_torque>
+          <frame>child</frame>
+          <measure_direction>parent_to_child</measure_direction>
+        </force_torque>
+      </sensor> 
     </joint>
+
+
+    <!-- ****************************   IMU Sensor   **************************** -->
+    <!-- IMU Link -->
+    <link name="IMU_Link">
+        <inertial>
+          <pose>0 0.01 0.6 0 0 0</pose>
+          <mass>0.1</mass>
+          <inertia>
+              <ixx>0.01</ixx> <ixy>0.0</ixy> <ixz>0.0</ixz>
+              <iyy>0.01</iyy> <iyz>0.0</iyz> <izz>0.01</izz>
+          </inertia>
+        </inertial>
+
+        <visual name="IMU_visual">
+          <pose>0 0.01 0.6 0 -0 0</pose>
+          <geometry>
+            <sphere>
+                <radius>0.005</radius>
+            </sphere>
+          </geometry>
+        </visual>
+
+        <collision name="IMU_collision">
+          <pose>0 0.01 0.6 0 -0 0</pose>
+          <geometry>
+            <sphere>
+                <radius>0.005</radius>
+            </sphere>
+          </geometry>
+        </collision>
+
+        <sensor name="imu_sensor" type="imu">
+          <always_on>true</always_on>
+          <update_rate>100</update_rate>
+          <pose>0 0.01 0.6 0 -0 0</pose>
+          <plugin name="imu_plugin" filename="libgazebo_ros_imu_sensor.so">
+              <updateRateHZ>100.0</updateRateHZ>
+              <gaussianNoise>0.05</gaussianNoise>
+              <xyzOffset>0 0 0</xyzOffset>
+              <rpyOffset>0 0 0</rpyOffset>
+              <frameName>IMU_Link</frameName>
+              <initialOrientationAsReference>false</initialOrientationAsReference>
+          </plugin>
+        </sensor>
+    </link>
+
+    <joint name="IMU_Torso_Joint" type="fixed">
+      <pose>0 0.01 0.6 0 -0 0</pose>
+      <parent>base_link</parent>
+      <child>IMU_Link</child>
+    </joint>
+
+
+  <plugin name="joint_state_publisher" filename="libgazebo_ros_joint_state_publisher.so">
+    <ros>
+      <namespace>/</namespace>
+      <remapping>joint_states:=/joint_states</remapping>
+    </ros>
+    <joint_name>Neck</joint_name>
+    <joint_name>TorsoShoulder_Left</joint_name>
+    <joint_name>ShoulderElbow_Left</joint_name>
+    <joint_name>TorsoShoulder_Right</joint_name>
+    <joint_name>ShoulderElbow_Right</joint_name>
+    <joint_name>TorsoThigh_Left</joint_name>
+    <joint_name>ThighCalf_Left</joint_name>
+    <joint_name>CalfFoot_Left</joint_name>
+    <joint_name>TorsoThigh_Right</joint_name>
+    <joint_name>ThighCalf_Right</joint_name>
+    <joint_name>CalfFoot_Right</joint_name>
+    <update_rate>50</update_rate>
+  </plugin>
+
+
+
 
   </model>
 </sdf>
