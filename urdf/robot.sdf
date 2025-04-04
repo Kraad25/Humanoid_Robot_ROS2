@@ -434,12 +434,6 @@
     </gazebo>
 
     <!-- #######################################################   JOINTS   ################################################################### -->
-    <!-- World and Base Joint (To Hang the robot and test the Joints) -->
-    <joint name="world_joint" type="fixed">
-        <parent>world</parent>
-        <child>base_link</child>
-    </joint>
-
     <!-- Neck -->
     <joint name='Neck' type='universal'>
       <pose relative_to='base_link'>-0.044306 0.010853 0.81525 0 -0 0</pose>

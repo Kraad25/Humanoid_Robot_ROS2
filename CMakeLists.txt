@@ -25,5 +25,7 @@ endif()
 install(DIRECTORY meshes urdf worlds launch
 DESTINATION share/${PROJECT_NAME})
 
+install(PROGRAMS src/BaseInputClass.py src/ImuNode.py src/JointStateNode.py
+DESTINATION lib/${PROJECT_NAME})
 
 ament_package()

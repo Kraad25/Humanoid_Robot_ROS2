@@ -17,7 +17,7 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(
             [os.path.join(get_package_share_directory('gazebo_ros'), 'launch'), '/gazebo.launch.py']
         ),
-        launch_arguments={'world': world_file}.items()  #'verbose': 'true', 
+        launch_arguments={'world': world_file}.items()  # 'verbose': 'true',
     )
 
     # Spawn the robot
@@ -28,8 +28,22 @@ def generate_launch_description():
         output='screen'
     )
 
+    # Imu Node
+    Imu = Node(
+        package='humanoid_robot',
+        executable='ImuNode.py',
+        output='screen')  
+    
+    # Joint State Node
+    JointState = Node(
+        package='humanoid_robot',
+        executable='JointStateNode.py',
+        output='screen')  
+
     return LaunchDescription([
-        DeclareLaunchArgument(name='headless', default_value='true', description='Set to "false" to run with GUI.'),
+        DeclareLaunchArgument(name='headless-rendering', default_value='true', description='Set to "false" to run with GUI.'),
         gazebo,
         spawn_entity,
+        Imu,
+        JointState,
     ])
