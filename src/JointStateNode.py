@@ -29,7 +29,7 @@ class JointStateInput(Node, BaseInput):
         self.jointState_publisher.publish(cleanedJointState)
 
     def get_input(self):
-        return self.cleaned_jointState.name, self.cleaned_jointState.position
+        return self.cleaned_jointState
     
     def clean_input(self, rawData):
         cleanedJointState = JointState()

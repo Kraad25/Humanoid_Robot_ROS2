@@ -2,8 +2,8 @@ from unittest import TestCase
 from unittest.mock import patch
 import inspect
 
-from src.humanoid_robot.src import ImuNode
-from src.humanoid_robot.src import JointStateNode   
+import ImuNode
+import JointStateNode   
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Imu
@@ -25,11 +25,11 @@ class TestMyInputClass(TestCase):
         self.joint.destroy_node()
         rclpy.shutdown()
 
-    def _test_assert_imuSensor_input_msg_type_as_imu(self):
+    def test_assert_imuSensor_input_msg_type_as_imu(self):
         rclpy.spin_once(self.imu, timeout_sec=1.0) # timeout_sec is important, else it'll wait endlessly
         self.assertIsInstance(self.imu.get_input(), Imu)
 
-    def _test_assert_jointState_input_msg_type_as_JointState(self):
+    def test_assert_jointState_input_msg_type_as_JointState(self):
         rclpy.spin_once(self.joint, timeout_sec=10.0)
         self.assertIsInstance(self.joint.get_input(), JointState)
 
@@ -39,13 +39,5 @@ class TestMyInputClass(TestCase):
 
         self.assertIsInstance(imuValue.orientation.y, float)
         self.assertIsInstance(imuValue.angular_velocity.y, float)
-
-    def test_joint_state_for_each_joints_are_JointState(self):
-        rclpy.spin_once(self.joint, timeout_sec=10.0)
-
-        jointName, jointPosition = self.joint.get_input()
-
-        for i in jointPosition:
-            self.assertIsInstance(i, float)
 
 
