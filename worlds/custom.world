@@ -37,8 +37,5 @@
       <real_time_update_rate>1000</real_time_update_rate>
     </physics>
 
-
-    <plugin name="world_plugin" filename="libworld_plugin.so"/>
-    
   </world>
 </sdf>

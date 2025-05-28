@@ -22,13 +22,14 @@ if(BUILD_TESTING)
 endif()
 
 
-install(DIRECTORY meshes urdf worlds launch
+install(DIRECTORY meshes urdf worlds launch config
 DESTINATION share/${PROJECT_NAME})
 
-install(DIRECTORY src/tests/sensor_bag
+install(DIRECTORY scripts/tests/sensor_bag
 DESTINATION share/${PROJECT_NAME}/tests )
 
-install(PROGRAMS src/BaseInputClass.py src/ImuNode.py src/JointStateNode.py
+install(PROGRAMS scripts/BaseInputClass.py scripts/ImuNode.py scripts/JointStateNode.py scripts/Controller.py
+                 scripts/JointTrajectoryNode.py
 DESTINATION lib/${PROJECT_NAME})
 
 ament_package()

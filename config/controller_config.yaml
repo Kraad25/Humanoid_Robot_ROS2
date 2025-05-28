@@ -1,0 +1,34 @@
+controller_manager:
+  ros__parameters:
+    update_rate: 1000  # Hz
+
+    joint_trajectory_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+joint_trajectory_controller:
+  ros__parameters:
+    joints:
+      - Neck_Yaw
+      - Neck_Pitch
+      - TorsoShoulder_Left_Pitch
+      - TorsoShoulder_Left_Roll
+      - ShoulderElbow_Left
+      - TorsoShoulder_Right_Pitch
+      - TorsoShoulder_Right_Roll
+      - ShoulderElbow_Right
+      - TorsoThigh_Left_Pitch
+      - TorsoThigh_Left_Yaw
+      - ThighCalf_Left
+      - CalfFoot_Left
+      - TorsoThigh_Right_Pitch
+      - TorsoThigh_Right_Yaw
+      - ThighCalf_Right
+      - CalfFoot_Right
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+      - velocity

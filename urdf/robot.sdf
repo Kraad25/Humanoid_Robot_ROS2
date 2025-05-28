@@ -40,7 +40,7 @@
     <!-- #####  UPPER BODY  ##### -->
     <!-- Head -->
     <link name='Head'>
-      <pose relative_to='Neck'>0 0 0 0 -0 0</pose>
+      <pose relative_to='Neck_Pitch'>0 0 0 0 0 0</pose>
       <inertial>
         <pose>2e-06 -0 0.009204 0 -0 0</pose>
         <mass>0.0204756</mass>
@@ -74,7 +74,7 @@
     <!-- *****  Shoulders  ***** -->
     <!-- Left Shoulder -->
     <link name='Shoulder_Left'>
-      <pose relative_to='TorsoShoulder_Left'>0 0 0 0 -0 0</pose>
+      <pose relative_to='TorsoShoulder_Left_Roll'>0 0 0 0 0 0</pose>
       <inertial>
         <pose>-0.000226 -0.035481 -0.068302 0 -0 0</pose>
         <mass>0.173962</mass>
@@ -107,7 +107,7 @@
    
    <!-- Right Shoulder -->
    <link name='Shoulder_Right'>
-      <pose relative_to='TorsoShoulder_Right'>0 0 0 0 -0 0</pose>
+      <pose relative_to='TorsoShoulder_Right_Roll'>0 0 0 0 0 0</pose>
       <inertial>
         <pose>-0.000227 0.035481 -0.068303 0 -0 0</pose>
         <mass>0.173956</mass>
@@ -209,7 +209,7 @@
     <!-- *****  Thighs  ***** -->
     <!-- Left Thigh -->
     <link name='Thigh_Left'>
-      <pose relative_to='TorsoThigh_Left'>0 0 0 0 -0 0</pose>
+      <pose relative_to='TorsoThigh_Left_Yaw'>0 0 0 0 0 0</pose>
       <inertial>
         <pose>0.023278 -0.039197 -0.143116 0 -0 0</pose>
         <mass>1.71253</mass>
@@ -242,7 +242,7 @@
     
     <!-- Right Thigh -->
     <link name='Thigh_Right'>
-      <pose relative_to='TorsoThigh_Right'>0 0 0 0 -0 0</pose>
+      <pose relative_to='TorsoThigh_Right_Yaw'>0 0 0 0 0 0</pose>
       <inertial>
         <pose>0.023281 0.039199 -0.143122 0 -0 0</pose>
         <mass>1.7125</mass>
@@ -379,7 +379,6 @@
         <contact>
           <collision>Foot_Left_collision</collision>  <!-- The part that detects contact -->
         </contact>
-        <plugin name="contact_plugin" filename="libcontact_plugin.so"/>
       </sensor>
     </link>
 
@@ -422,46 +421,72 @@
         <contact>
           <collision>Foot_Right_collision</collision>  <!-- The part that detects contact -->
         </contact>
-        <plugin name="contact_plugin" filename="libcontact_plugin.so"/>
       </sensor>
     </link>
 
-    <gazebo reference="Neck">
-      <sensor name="force_torque_sensor" type="force_torque">
-        <update_rate>30.0</update_rate>
-        <topic>/force_torque_data</topic>
-      </sensor>
-    </gazebo>
 
     <!-- #######################################################   JOINTS   ################################################################### -->
+    <joint name="world_joint" type="fixed">
+        <parent>world</parent>
+        <child>base_link</child>
+    </joint>
+
+    
     <!-- Neck -->
-    <joint name='Neck' type='universal'>
-      <pose relative_to='base_link'>-0.044306 0.010853 0.81525 0 -0 0</pose>
+    <joint name='Neck_Yaw' type='revolute'>
+      <pose relative_to='base_link'>-0.044306 0.010853 0.81525 0 0 0</pose>
       <parent>base_link</parent>
-      <child>Head</child>
-      <!-- First Axis (Up/Down Movement) -->
+      <child>Neck_Yaw_Link</child>
+
+      <!-- (Left/Right Movement) -->
       <axis>
-        <xyz>0 0 1</xyz>
+        <xyz>0 0 1</xyz> 
         <limit>
             <lower>-1.0472</lower>  <!-- 60 degrees-->
             <upper>1.0472</upper> 
         </limit>
         <dynamics>
+            <damping>0.05</damping>
             <friction>0.5</friction>
         </dynamics>
       </axis>
 
-      <!-- Second Axis (Left/Right Movement) -->
-      <axis2>
-        <xyz>0 1 0</xyz> 
+      <sensor name="force_torque_sensor" type="force_torque">
+        <pose degrees="true">0 0 0.0   30 0 0</pose>
+        <update_rate>100</update_rate>
+        <always_on>true</always_on>
+        <visualize>true</visualize>
+        <topic>force_torque1</topic>
+        <force_torque>
+          <frame>child</frame>
+          <measure_direction>parent_to_child</measure_direction>
+        </force_torque>
+      </sensor>
+
+    </joint>
+
+    <!-- Neck Yaw Link (This is a dummy link which allows us to split a universal into 2 revolute joints) -->
+    <link name='Neck_Yaw_Link'>
+      <pose relative_to='Neck_Yaw'>0 0 0 0 0 0</pose>
+    </link>
+    
+    <joint name='Neck_Pitch' type='revolute'>
+      <pose relative_to='base_link'>-0.044306 0.010853 0.81525 0 0 0</pose>
+      <parent>Neck_Yaw_Link</parent>
+      <child>Head</child>
+
+      <!-- (Up/Down Movement) -->
+      <axis>
+        <xyz>0 1 0</xyz>
         <limit>
             <lower>-0.523599</lower>  <!-- 30 degrees -->
             <upper>0.523599</upper> 
         </limit>
         <dynamics>
+            <damping>0.05</damping>
             <friction>0.5</friction>
         </dynamics>
-      </axis2>
+      </axis>
 
       <sensor name="force_torque_sensor" type="force_torque">
         <pose degrees="true">0 0 0.0   30 0 0</pose>
@@ -478,10 +503,10 @@
     </joint>
 
     <!-- Left Shoulder and Torso -->
-    <joint name='TorsoShoulder_Left' type='universal'>
+    <joint name='TorsoShoulder_Left_Pitch' type='revolute'>
       <pose relative_to='base_link'>-0.033379 -0.064693 0.78215 0 -0 0</pose>
       <parent>base_link</parent>
-      <child>Shoulder_Left</child>
+      <child>LShoulder_Pitch</child>
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
@@ -489,20 +514,44 @@
             <upper>0.349066</upper>
         </limit>
         <dynamics>
+            <damping>0.05</damping>
             <friction>0.5</friction>
         </dynamics>
       </axis>
 
-      <axis2>
+      <sensor name="force_torque_sensor" type="force_torque">
+        <pose degrees="true">0 0 0.0   30 0 0</pose>
+        <update_rate>100</update_rate>
+        <always_on>true</always_on>
+        <visualize>true</visualize>
+        <topic>force_torque2</topic>
+        <force_torque>
+          <frame>child</frame>
+          <measure_direction>parent_to_child</measure_direction>
+        </force_torque>
+      </sensor>
+    </joint>
+
+    <!-- LShoulder_Pitch (This is a dummy link which allows us to split a universal into 2 revolute joints) -->
+    <link name='LShoulder_Pitch'>
+      <pose relative_to='TorsoShoulder_Left_Pitch'>0 0 0 0 0 0</pose>
+    </link>
+
+    <joint name='TorsoShoulder_Left_Roll' type='revolute'>
+      <pose relative_to='base_link'>-0.033379 -0.064693 0.78215 0 -0 0</pose>
+      <parent>LShoulder_Pitch</parent>
+      <child>Shoulder_Left</child>
+      <axis>
         <xyz>1 0 0</xyz> 
         <limit>
             <lower>-1.0472</lower>  <!-- 0 - 60 degrees -->
             <upper>0</upper> 
         </limit>
         <dynamics>
+            <damping>0.05</damping>
             <friction>0.5</friction>
         </dynamics>
-      </axis2>
+      </axis>
 
       <sensor name="force_torque_sensor" type="force_torque">
         <pose degrees="true">0 0 0.0   30 0 0</pose>
@@ -529,6 +578,7 @@
             <upper>0.349066</upper>
         </limit>
         <dynamics>
+            <damping>0.05</damping>
             <friction>0.5</friction>
         </dynamics>
       </axis>
@@ -547,10 +597,10 @@
     </joint>
 
     <!-- Right Shoulder and Torso -->
-    <joint name='TorsoShoulder_Right' type='universal'>
+    <joint name='TorsoShoulder_Right_Pitch' type='revolute'>
       <pose relative_to='base_link'>-0.033308 0.08489 0.77914 0 -0 0</pose>
       <parent>base_link</parent>
-      <child>Shoulder_Right</child>
+      <child>RShoulder_Pitch</child>
       <axis>
         <xyz>0 1 0</xyz>  <!-- Rotation around Y-axis -->
         <limit>
@@ -558,20 +608,44 @@
             <upper>0.349066</upper>
         </limit>
         <dynamics>
+            <damping>0.05</damping>
             <friction>0.5</friction>
         </dynamics>
       </axis>
 
-      <axis2>
+      <sensor name="force_torque_sensor" type="force_torque">
+        <pose degrees="true">0 0 0.0   30 0 0</pose>
+        <update_rate>100</update_rate>
+        <always_on>true</always_on>
+        <visualize>true</visualize>
+        <topic>force_torque4</topic>
+        <force_torque>
+          <frame>child</frame>
+          <measure_direction>parent_to_child</measure_direction>
+        </force_torque>
+      </sensor>
+    </joint>
+
+    <!-- RShoulder_Pitch (This is a dummy link which allows us to split a universal into 2 revolute joints) -->
+    <link name='RShoulder_Pitch'>
+      <pose relative_to='TorsoShoulder_Right_Pitch'>0 0 0 0 0 0</pose>
+    </link>
+
+    <joint name='TorsoShoulder_Right_Roll' type='revolute'>
+      <pose relative_to='base_link'>-0.033308 0.08489 0.77914 0 -0 0</pose>
+      <parent>RShoulder_Pitch</parent>
+      <child>Shoulder_Right</child>
+      <axis>
         <xyz>1 0 0</xyz>  <!-- Rotation around X-axis -->
         <limit>
             <lower>0</lower>  <!-- 0 - 60 degrees -->
             <upper>1.0472</upper> 
         </limit>
         <dynamics>
+            <damping>0.05</damping>
             <friction>0.5</friction>
         </dynamics>
-      </axis2>
+      </axis>
 
       <sensor name="force_torque_sensor" type="force_torque">
         <pose degrees="true">0 0 0.0   30 0 0</pose>
@@ -598,6 +672,7 @@
             <upper>0.349066</upper>
         </limit>
         <dynamics>
+            <damping>0.05</damping>
             <friction>0.5</friction>
         </dynamics>
       </axis>
@@ -616,10 +691,10 @@
     </joint>
 
     <!-- Left Thigh and Torso -->
-    <joint name='TorsoThigh_Left' type='universal'>
+    <joint name='TorsoThigh_Left_Pitch' type='revolute'>
       <pose relative_to='base_link'>-0.013335 -0.010993 0.55295 0 -0 0</pose>
       <parent>base_link</parent>
-      <child>Thigh_Left</child>
+      <child>LThigh_Pitch</child>
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
@@ -631,7 +706,30 @@
         </dynamics>
       </axis>
 
-      <axis2>
+      <sensor name="force_torque_sensor" type="force_torque">
+        <pose degrees="true">0 0 0.0   30 0 0</pose>
+        <update_rate>100</update_rate>
+        <always_on>true</always_on>
+        <visualize>true</visualize>
+        <topic>force_torque6</topic>
+        <force_torque>
+          <frame>child</frame>
+          <measure_direction>parent_to_child</measure_direction>
+        </force_torque>
+      </sensor>
+    </joint>
+
+    <!-- LThigh_Pitch (This is a dummy link which allows us to split a universal into 2 revolute joints) -->
+    <link name='LThigh_Pitch'>
+      <pose relative_to='TorsoThigh_Left_Pitch'>0 0 0 0 0 0</pose>
+    </link>
+
+    <joint name='TorsoThigh_Left_Yaw' type='revolute'>
+      <pose relative_to='base_link'>-0.013335 -0.010993 0.55295 0 -0 0</pose>
+      <parent>LThigh_Pitch</parent>
+      <child>Thigh_Left</child>
+      
+      <axis>
         <xyz>0 0 1</xyz> 
         <limit>
             <lower>-0.0872665</lower>  <!-- -5 - 20 degrees -->
@@ -640,9 +738,9 @@
         <dynamics>
             <friction>0.5</friction>
         </dynamics>
-      </axis2>
+      </axis>
 
-      <sensor name="force_torque_sensor" type="force_torque">
+    <sensor name="force_torque_sensor" type="force_torque">
         <pose degrees="true">0 0 0.0   30 0 0</pose>
         <update_rate>100</update_rate>
         <always_on>true</always_on>
@@ -714,10 +812,10 @@
     </joint>
 
     <!-- Right Thigh and Torso -->
-    <joint name='TorsoThigh_Right' type='universal'>
+    <joint name='TorsoThigh_Right_Pitch' type='revolute'>
       <pose relative_to='base_link'>-0.015152 0.040137 0.55044 0 -0 0</pose>
       <parent>base_link</parent>
-      <child>Thigh_Right</child>
+      <child>RThigh_Pitch</child>
       <axis>
       <xyz>0 1 0</xyz>
       <limit>
@@ -728,16 +826,6 @@
           <friction>0.5</friction>
       </dynamics>
       </axis>
-      <axis2>
-        <xyz>0 0 1</xyz> 
-        <limit>
-            <lower>-0.0872665</lower>  <!-- -5 - 20 degrees -->
-            <upper>0.349066</upper> 
-        </limit>
-        <dynamics>
-            <friction>0.5</friction>
-        </dynamics>
-      </axis2>
       
       <sensor name="force_torque_sensor" type="force_torque">
         <pose degrees="true">0 0 0.0   30 0 0</pose>
@@ -751,6 +839,39 @@
         </force_torque>
       </sensor>
     </joint>
+
+    <!-- RThigh_Pitch (This is a dummy link which allows us to split a universal into 2 revolute joints) -->
+    <link name='RThigh_Pitch'>
+      <pose relative_to='TorsoThigh_Right_Pitch'>0 0 0 0 0 0</pose>
+    </link>
+
+    <joint name='TorsoThigh_Right_Yaw' type='revolute'>
+      <pose relative_to='base_link'>-0.015152 0.040137 0.55044 0 -0 0</pose>
+      <parent>RThigh_Pitch</parent>
+      <child>Thigh_Right</child>
+      <axis>
+        <xyz>0 0 1</xyz> 
+        <limit>
+            <lower>-0.0872665</lower>  <!-- -5 - 20 degrees -->
+            <upper>0.349066</upper> 
+        </limit>
+        <dynamics>
+            <friction>0.5</friction>
+        </dynamics>
+      </axis>
+      
+      <sensor name="force_torque_sensor" type="force_torque">
+        <pose degrees="true">0 0 0.0 30 0 0</pose>
+        <update_rate>100</update_rate>
+        <always_on>true</always_on>
+        <visualize>true</visualize>
+        <topic>force_torque9</topic>
+        <force_torque>
+          <frame>child</frame>
+          <measure_direction>parent_to_child</measure_direction>
+        </force_torque>
+      </sensor>
+    </joint>  
 
     <!-- Right Calf and Thigh -->
     <joint name='ThighCalf_Right' type='revolute'>
@@ -868,22 +989,42 @@
       <namespace>/</namespace>
       <remapping>joint_states:=/joint_states</remapping>
     </ros>
-    <joint_name>Neck</joint_name>
-    <joint_name>TorsoShoulder_Left</joint_name>
+    <joint_name>Neck_Pitch</joint_name>
+    <joint_name>Neck_Yaw</joint_name>
+
+    <joint_name>TorsoShoulder_Left_Pitch</joint_name>
+    <joint_name>TorsoShoulder_Left_Roll</joint_name>
     <joint_name>ShoulderElbow_Left</joint_name>
-    <joint_name>TorsoShoulder_Right</joint_name>
+
+    <joint_name>TorsoShoulder_Right_Pitch</joint_name>
+    <joint_name>TorsoShoulder_Right_Roll</joint_name>
     <joint_name>ShoulderElbow_Right</joint_name>
-    <joint_name>TorsoThigh_Left</joint_name>
+
+    <joint_name>TorsoThigh_Left_Pitch</joint_name>
+    <joint_name>TorsoThigh_Left_Yaw</joint_name>
     <joint_name>ThighCalf_Left</joint_name>
     <joint_name>CalfFoot_Left</joint_name>
-    <joint_name>TorsoThigh_Right</joint_name>
+
+    <joint_name>TorsoThigh_Right_Pitch</joint_name>
+    <joint_name>TorsoThigh_Right_Yaw</joint_name>
     <joint_name>ThighCalf_Right</joint_name>
     <joint_name>CalfFoot_Right</joint_name>
     <update_rate>50</update_rate>
   </plugin>
 
+  <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
+    <parameters>file:///home/drak/ros2_ws/src/humanoid_robot/config/controller_config.yaml</parameters>
+  </plugin>
 
-
+  <transmission name="Neck_Yaw_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="Neck_Yaw">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="Neck_Yaw_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
 
   </model>
 </sdf>
