@@ -9,6 +9,19 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclpy REQUIRED)
 
+find_package(geometry_msgs REQUIRED)
+find_package(builtin_interfaces REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(rosidl_default_generators REQUIRED)
+
+
+rosidl_generate_interfaces(${PROJECT_NAME}
+  "msg/Contact.msg"
+  "msg/Contacts.msg"
+  DEPENDENCIES geometry_msgs std_msgs builtin_interfaces
+)
+add_subdirectory(plugins)
+
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   # the following line skips the linter which checks for copyrights

@@ -26,14 +26,16 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-a
 
 sudo apt update -y
 sudo apt upgrade -y
-sudo apt install ros-humble-desktop -y
+sudo apt install ros-humble-ros-base -y
 sudo apt install python3-colcon-common-extensions -y
 
 source /opt/ros/humble/setup.bash
 
 # ROS2 dependencies
-sudo apt update
 sudo apt install -y \
     ros-humble-xacro \
     ros-humble-gazebo-ros-pkgs \
-    ros-humble-tf-transformations
+    ros-humble-tf-transformations \
+    ros-humble-rosidl-default-generators \
+    ros-humble-rclpy \
+    libsdformat9-dev 

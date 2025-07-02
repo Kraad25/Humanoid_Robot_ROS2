@@ -1,0 +1,55 @@
+{
+  "configurations": [
+    {
+      "name": "Linux",
+      "includePath": [
+        // System Header
+        "/usr/include",
+
+        // Project Specifics
+        "${workspaceFolder}/**",
+        "${workspaceFolder}/install/humanoid_robot/include/humanoid_robot",
+
+        // Gazebo and SDF Format
+        "/usr/include/gazebo-11",
+        "/usr/include/sdformat-9.7",
+        "/usr/include/sdformat-9.7/sdf",
+
+        // ROS 2
+        "/opt/ros/humble/include",
+        "/opt/ros/humble/include/rcl",
+        "/opt/ros/humble/include/rmw",
+        "/opt/ros/humble/include/rcutils",
+        "/opt/ros/humble/include/rcpputils",
+        "/opt/ros/humble/include/rcl_yaml_param_parser",
+
+        // ROS 2 Interface
+        "/opt/ros/humble/include/rosidl_runtime_c",
+        "/opt/ros/humble/include/rosidl_runtime_cpp",
+        "/opt/ros/humble/include/rosidl_typesupport_interface",
+        "/opt/ros/humble/include/rcl_interfaces", // Params, QoS, etc.
+        "/opt/ros/humble/include/builtin_interfaces",
+        "/opt/ros/humble/include/statistics_msgs",
+        "/opt/ros/humble/include/libstatistics_collector",
+        "/opt/ros/humble/include/tracetools",
+
+        // rclpp 
+        "/opt/ros/humble/include/rclcpp",
+        "/opt/ros/humble/include/rclcpp/rclcpp",
+        
+        // Messages
+        "/opt/ros/humble/include/std_msgs",
+        "/opt/ros/humble/include/geometry_msgs",
+
+        // Gazebo ROS Interface
+        "/opt/ros/humble/include/gazebo_msgs"
+      ],
+      "defines": [],
+      "compilerPath": "/usr/bin/g++",
+      "cStandard": "gnu17",
+      "cppStandard": "gnu++17",
+      "intelliSenseMode": "linux-gcc-x64"
+    }
+  ],
+  "version": 4
+}

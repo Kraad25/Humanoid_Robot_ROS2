@@ -5,6 +5,13 @@
     <include>
       <uri>model://ground_plane</uri>
     </include>
+
+    <plugin name="contact_bridge_plugin" filename="libcontact_bridge_plugin.so">
+      <ros>
+        <namespace>/</namespace>
+      </ros>
+      <update_rate>100.0</update_rate>
+    </plugin>
     
     <gui>
       <camera name="gzclient_camera">
@@ -17,6 +24,7 @@
       <grid>true</grid>
       <origin_visual>false</origin_visual>
     </scene>
+
     <light name="sun" type="directional">
       <cast_shadows>0</cast_shadows>
       <pose>0 0 10 0 -0 0</pose>
