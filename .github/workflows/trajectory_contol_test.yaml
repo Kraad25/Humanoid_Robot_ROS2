@@ -1,4 +1,4 @@
-name: Input Test
+name: Joint Trajectory Node Test
 on:
   pull_request:
     branches: [main]
@@ -28,15 +28,11 @@ jobs:
         run: |
           source /opt/ros/humble/setup.bash
           colcon build --symlink-install
-
           source install/setup.bash
       
-      - name: Play Sensor_Bag and Run Tests
+      - name: Run Joint Trajectory Node Test
         run: |
-          colcon build --symlink-install
           source /opt/ros/humble/setup.bash
           source install/setup.bash
 
-          ros2 launch humanoid_robot test.launch.py &
-          sleep 10  # Give the nodes time to launch
-          python3 -m pytest scripts/tests/test_inputs.py
+          python3 -m pytest scripts/tests/test_jointTrajectory.py

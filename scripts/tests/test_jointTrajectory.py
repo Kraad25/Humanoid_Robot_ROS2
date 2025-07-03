@@ -1,14 +1,9 @@
 from unittest import TestCase
 from unittest.mock import patch
-import inspect
 
-import ImuNode
-import JointStateNode   
 import JointTrajectoryNode
 import rclpy
-from rclpy.node import Node
-from sensor_msgs.msg import Imu
-from sensor_msgs.msg import JointState
+
 
 
 class TestMyJointTrajectoryClass(TestCase):
@@ -35,8 +30,7 @@ class TestMyJointTrajectoryClass(TestCase):
         msg = self.trajectory.get_output()
 
         joint_names = msg.joint_names
-        joint_positions = msg.points[0].positions
-        index = msg.joint_names.index(joint_name[0])
+        joint_positions = msg.points[0].positions        
 
         for i in range(len(joint_names)):
             name = joint_names[i]

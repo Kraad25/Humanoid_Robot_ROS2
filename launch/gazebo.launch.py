@@ -36,7 +36,7 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(
             [os.path.join(get_package_share_directory('gazebo_ros'), 'launch'), '/gazebo.launch.py']),
             launch_arguments={'headless': LaunchConfiguration('headless-rendering'),
-                              'world': world_file}.items()  # 'verbose': 'true',
+                              'world': world_file}.items()  # 'verbose': 'true', 'gui': 'false'
     )
 
 
