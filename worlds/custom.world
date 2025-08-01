@@ -12,6 +12,12 @@
       </ros>
       <update_rate>100.0</update_rate>
     </plugin>
+
+    <plugin name="set_entity_state_plugin" filename="libgazebo_ros_state.so">
+      <ros>
+        <namespace>/</namespace>
+      </ros>
+    </plugin>
     
     <gui>
       <camera name="gzclient_camera">
@@ -39,10 +45,11 @@
       <direction>-0.5 0.5 -1</direction>
     </light>
 
-    <physics name="dart_physics" type="dart">
+    <physics type="ode">
+      <gravity>0 0 -9.81</gravity>
       <max_step_size>0.001</max_step_size>
       <real_time_factor>1</real_time_factor>
-      <real_time_update_rate>1000</real_time_update_rate>
+      <real_time_update_rate>0</real_time_update_rate>
     </physics>
 
   </world>

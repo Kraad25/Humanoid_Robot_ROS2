@@ -1,12 +1,12 @@
 controller_manager:
   ros__parameters:
-    update_rate: 1000  # Hz
-
-    joint_trajectory_controller:
-      type: joint_trajectory_controller/JointTrajectoryController
+    update_rate: 100
 
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
+
+    joint_trajectory_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
 
 joint_trajectory_controller:
   ros__parameters:
@@ -27,8 +27,29 @@ joint_trajectory_controller:
       - TorsoThigh_Right_Yaw
       - ThighCalf_Right
       - CalfFoot_Right
+
     command_interfaces:
       - position
     state_interfaces:
       - position
       - velocity
+
+gazebo_ros_control:
+  ros__parameters:
+    pid_gains:
+      Neck_Yaw: {p: 200.0, i: 0.0, d: 10.0}
+      Neck_Pitch: {p: 200.0, i: 0.0, d: 10.0}
+      TorsoShoulder_Left_Pitch: {p: 400.0, i: 0.0, d: 20.0}
+      TorsoShoulder_Left_Roll: {p: 400.0, i: 0.0, d: 20.0}
+      ShoulderElbow_Left: {p: 400.0, i: 0.0, d: 20.0}
+      TorsoShoulder_Right_Pitch: {p: 400.0, i: 0.0, d: 20.0}
+      TorsoShoulder_Right_Roll: {p: 400.0, i: 0.0, d: 20.0}
+      ShoulderElbow_Right: {p: 400.0, i: 0.0, d: 20.0}
+      TorsoThigh_Left_Pitch: {p: 800.0, i: 0.0, d: 30.0}
+      TorsoThigh_Left_Yaw: {p: 800.0, i: 0.0, d: 30.0}
+      ThighCalf_Left: {p: 800.0, i: 0.0, d: 30.0}
+      CalfFoot_Left: {p: 800.0, i: 0.0, d: 30.0}
+      TorsoThigh_Right_Pitch: {p: 800.0, i: 0.0, d: 30.0}
+      TorsoThigh_Right_Yaw: {p: 800.0, i: 0.0, d: 30.0}
+      ThighCalf_Right: {p: 800.0, i: 0.0, d: 30.0}
+      CalfFoot_Right: {p: 800.0, i: 0.0, d: 30.0}

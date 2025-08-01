@@ -36,7 +36,7 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(
             [os.path.join(get_package_share_directory('gazebo_ros'), 'launch'), '/gazebo.launch.py']),
             launch_arguments={'headless': LaunchConfiguration('headless-rendering'),
-                              'world': world_file}.items()  # 'verbose': 'true', 'gui': 'false'
+                              'world': world_file, 'gui': 'true'}.items()  # 'verbose': 'true'
     )
 
 
@@ -44,7 +44,7 @@ def generate_launch_description():
     spawn_entity = Node(
         package='gazebo_ros',
         executable='spawn_entity.py',
-        arguments=['-topic', '/robot_description', '-entity', 'robot', '-x', '0', '-y', '0', '-z', '0'],  # Adjust the z value
+        arguments=['-topic', '/robot_description', '-entity', 'Selene', '-x', '0', '-y', '0', '-z', '0'],  # Adjust the z value
         output='screen'
     )
     
@@ -72,13 +72,6 @@ def generate_launch_description():
         executable='JointStateNode.py',
         output='screen')
     
-    # Joint Trajectory Controller Node
-    Trajectory = Node(
-        package='humanoid_robot',
-        executable='JointTrajectoryNode.py',
-        output='screen')
-
-  
     return LaunchDescription([
         DeclareLaunchArgument(name='headless-rendering', default_value='true', description='Set to "false" to run with GUI.'),
         gazebo,
@@ -87,5 +80,4 @@ def generate_launch_description():
         load_joint_controller,
         Imu,
         JointState,
-        Trajectory,
     ])

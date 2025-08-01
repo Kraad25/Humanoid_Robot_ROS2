@@ -37,4 +37,4 @@ jobs:
 
           ros2 launch humanoid_robot test.launch.py &
           sleep 10  # Give the nodes time to launch
-          python3 -m pytest scripts/tests/test_inputs.py
+          python3 -m pytest scripts/nodes/tests/test_inputs.py

@@ -1,11 +1,9 @@
 from unittest import TestCase
 from unittest.mock import patch
-import inspect
 
-import ImuNode
-import JointStateNode   
+from ImuNode import ImuInput
+from JointStateNode import JointStateInput
 import rclpy
-from rclpy.node import Node
 from sensor_msgs.msg import Imu
 from sensor_msgs.msg import JointState
 
@@ -16,8 +14,8 @@ class TestMyInputClass(TestCase):
         print("Setup")
         if not rclpy.ok():  # Prevent multiple initializations
             rclpy.init()
-        self.imu = ImuNode.ImuInput()
-        self.joint = JointStateNode.JointStateInput()
+        self.imu = ImuInput()
+        self.joint = JointStateInput()
 
     def tearDown(self):
         print("Teardown")

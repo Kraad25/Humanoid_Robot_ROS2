@@ -38,11 +38,10 @@ endif()
 install(DIRECTORY meshes urdf worlds launch config
 DESTINATION share/${PROJECT_NAME})
 
-install(DIRECTORY scripts/tests/sensor_bag
+install(DIRECTORY scripts/nodes/tests/sensor_bag
 DESTINATION share/${PROJECT_NAME}/tests )
 
-install(PROGRAMS scripts/BaseInputClass.py scripts/ImuNode.py scripts/JointStateNode.py scripts/Controller.py
-                 scripts/JointTrajectoryNode.py
+install(PROGRAMS scripts/nodes/ImuNode.py scripts/nodes/JointStateNode.py
 DESTINATION lib/${PROJECT_NAME})
 
 ament_package()
