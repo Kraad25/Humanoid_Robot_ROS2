@@ -18,6 +18,7 @@ find_package(rosidl_default_generators REQUIRED)
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/Contact.msg"
   "msg/Contacts.msg"
+  "srv/ResetJoints.srv"
   DEPENDENCIES geometry_msgs std_msgs builtin_interfaces
 )
 add_subdirectory(plugins)

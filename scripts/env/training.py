@@ -8,16 +8,16 @@ if __name__ == '__main__':
     rclpy.init()
     # check_env(HumanoidRobotEnv(render_mode=None, maxStep=1))
 
-    env = HumanoidRobotEnv(render_mode=None, maxStep=100)
+    env = HumanoidRobotEnv(render_mode=None, maxStep=500)
     
     try:
-        model = PPO.load("ppo_bipedal_standing", env=env)
+        model = PPO.load("ppo_balancing", env=env)
         print("Loaded existing model")
     except:
-        model = PPO("MlpPolicy", env, n_steps=16)
+        model = PPO("MlpPolicy", env)
         print("Training new model")
 
-    model.learn(total_timesteps=32, progress_bar=True)
+    model.learn(total_timesteps=500000, progress_bar=True)
     model.save("ppo_balancing")
 
     env.close()

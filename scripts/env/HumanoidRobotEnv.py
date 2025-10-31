@@ -22,6 +22,7 @@ class HumanoidRobotEnv(gym.Env, Node):
 
         # Training Variables
         self.current_step = 0
+        self.prev_shaping = None
         self.tilt = None
         self.tilt_rate = None
         self.left_foot_contact = False
@@ -41,9 +42,10 @@ class HumanoidRobotEnv(gym.Env, Node):
     def reset(self, seed=None):
         self.contact_detector.set_enable_detection(False)
 
-        self.robot.reset_pose()
+        self.robot.reset_robot()
         self._reset_episode_variables()
         self._ensure_imu_ready()
+        self._get_foot_contact()
 
         self.contact_detector.set_enable_detection(True)
 
@@ -51,14 +53,16 @@ class HumanoidRobotEnv(gym.Env, Node):
 
     def step(self, action):
         self.current_step += 1
+        self._get_foot_contact()
 
         self.robot.apply_action(action)
-        rclpy.spin_once(self, timeout_sec=0.01)
+        rclpy.spin_once(self, timeout_sec=0.02)
 
         state = self._get_state()
         reward = self._compute_reward()
         terminated, truncated = self._check_termination()
 
+        self.contact_detector.reset_foot_contact()
         return np.array(state, dtype=np.float32), float(reward), terminated, truncated, {}
 
     def render(self):
@@ -71,6 +75,9 @@ class HumanoidRobotEnv(gym.Env, Node):
     def _callback(self, msg):
         self.tilt = msg.orientation.y
         self.tilt_rate = msg.angular_velocity.y
+
+    def _get_foot_contact(self):
+        self.left_foot_contact, self.right_foot_contact = self.contact_detector.foot_contact()
 
     def _get_state(self):
         state = [
@@ -90,30 +97,45 @@ class HumanoidRobotEnv(gym.Env, Node):
     
     def _reset_episode_variables(self):
         self.current_step = 0
+        self.prev_shaping = None
         self.tilt = None
         self.tilt_rate = None
-        self.left_foot_contact = False
-        self.right_foot_contact = False
 
         self.contact_detector.reset()
+        self.contact_detector.reset_foot_contact()
 
     def _compute_reward(self):
-        reward = 0.0
+        tilt_penalty = abs(self.tilt) * 10.0
+        tilt_rate_penalty = abs(self.tilt_rate) * 2.0
+        foot_bonus = 5.0 if self.left_foot_contact and self.right_foot_contact else 0.0
 
-        if self.contact_detector.has_fallen():
-            reward = -10.0
-        if self.current_step >= self.maxStep:
-            reward += 10.0
+        shaping = -(tilt_penalty + tilt_rate_penalty) + foot_bonus
+
+        reward = 0.0
+        if self.prev_shaping is not None:
+            reward = shaping - self.prev_shaping
+        self.prev_shaping = shaping
 
         reward += 1.0 # Survival reward
+
+        if self.maxStep and self.current_step >= self.maxStep:
+            reward += 10.0
+        if self._check_fallen():
+            reward -= 50.0
 
         return reward
     
     def _check_termination(self):
-        terminated = self.contact_detector.has_fallen()
-        truncated = self.current_step >= self.maxStep
+        terminated = self._check_fallen()
+        if self.maxStep:
+            truncated = self.current_step >= self.maxStep
+        else:
+            truncated = False
 
         return terminated, truncated
+    
+    def _check_fallen(self):
+        return self.contact_detector.has_fallen()
     
     def _ensure_imu_ready(self, timeout_sec=5.0):
         # To prevent the imu values being None in _get_state() we wait to get the value after resetting it.

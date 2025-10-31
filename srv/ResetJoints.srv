@@ -1,0 +1,6 @@
+# Request
+string[] joint_names
+float64[] positions
+---
+# Response
+bool success

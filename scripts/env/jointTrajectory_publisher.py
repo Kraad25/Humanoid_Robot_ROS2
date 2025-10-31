@@ -21,6 +21,10 @@ class JointTrajectoryPub:
                 index = trajectory_msg.joint_names.index(joint_name[i])
                 trajectory_msg.points[0].positions[index] = value[i]
                 
-        trajectory_msg.points[0].time_from_start.sec = time_to_end_sec  # Set time from start to 1 second
+        secs = int(time_to_end_sec)
+        nsecs = int((time_to_end_sec - secs) * 1e9)
+
+        trajectory_msg.points[0].time_from_start.sec = secs
+        trajectory_msg.points[0].time_from_start.nanosec = nsecs
 
         self.publish_trajectory(trajectory_msg)

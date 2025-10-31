@@ -20,8 +20,8 @@ Action = {
 # Observation Space
 Observation = {
     # Imu's orientation and angular velocity, all 16 joints's position and 2 more values for foot contacts.
-    "low": np.array([-math.pi, -2] + [-1]*16 + [0.0, 0.0]).astype(np.float32),
-    "high": np.array([math.pi, 2] + [1]*16 + [1.0, 1.0]).astype(np.float32)
+    "low": np.array([-math.pi, -2] + [-5]*16 + [0.0, 0.0]).astype(np.float32),
+    "high": np.array([math.pi, 2] + [5]*16 + [1.0, 1.0]).astype(np.float32)
 }
 
 ALL_JOINTS =  ["Neck_Yaw", "Neck_Pitch", "TorsoShoulder_Left_Pitch", "TorsoShoulder_Left_Roll",
@@ -31,7 +31,28 @@ ALL_JOINTS =  ["Neck_Yaw", "Neck_Pitch", "TorsoShoulder_Left_Pitch", "TorsoShoul
                 "TorsoThigh_Right_Yaw", "ThighCalf_Right", "CalfFoot_Right"
             ]
 
-DEFAULT_JOINT_POSITION_VALUES = [0.0] * len(ALL_JOINTS)
+DEFAULT_JOINT_POSITION_VALUES = [
+    0.0,   # Neck_Yaw
+    0.0,   # Neck_Pitch
+    
+    0.1,   # TorsoShoulder_Left_Pitch (arms slightly forward)
+    0.0,   # TorsoShoulder_Left_Roll
+    0.0,   # ShoulderElbow_Left
+
+    0.1,   # TorsoShoulder_Right_Pitch
+    0.0,   # TorsoShoulder_Right_Roll
+    0.0,   # ShoulderElbow_Right
+
+    -0.2,  # TorsoThigh_Left_Pitch (hip slightly flexed forward)
+    0.0,   # TorsoThigh_Left_Yaw
+    0.4,   # ThighCalf_Left (knee bent ~23°)
+    -0.2,  # CalfFoot_Left (ankle pitched back to keep foot flat)
+
+    -0.2,  # TorsoThigh_Right_Pitch
+    0.0,   # TorsoThigh_Right_Yaw
+    0.4,   # ThighCalf_Right
+    -0.2   # CalfFoot_Right
+]
 
 JOINT_LIMITS = {
     "Neck_Yaw": (-1.0472, 1.0472),                    # (-60°, 60°)
@@ -44,10 +65,12 @@ JOINT_LIMITS = {
     "ShoulderElbow_Right": (-1.74533, 0.349066),      # (-100°, 20°)
     "TorsoThigh_Left_Yaw": (-0.0872665, 0.349066),    # (-5°, 20°)
     "TorsoThigh_Left_Pitch": (-2.0944, 0.349066),     # (-120°, 20°)
-    "ThighCalf_Left": (-0.349066, 1.74533),           # (-20°, 100°)
+    "ThighCalf_Left": (-0.523599, 1.74533),           # (-30°, 100°)
     "CalfFoot_Left": (-0.785398, 0.785398),           # (-45°, 45°)
     "TorsoThigh_Right_Yaw": (-0.0872665, 0.349066),   # (-5°, 20°)
     "TorsoThigh_Right_Pitch": (-2.0944, 0.349066),    # (-120°, 20°)
-    "ThighCalf_Right": (-0.349066, 1.74533),          # (-20°, 100°)
+    "ThighCalf_Right": (-0.523599, 1.74533),          # (-30°, 100°)
     "CalfFoot_Right": (-0.785398, 0.785398),          # (-45°, 45°)
 }
+
+INITIAL_TILT = 0.349066  # ~20 degrees in radians

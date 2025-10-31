@@ -1,0 +1,172 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:macro name="ros2_control">
+    <!-- ****************************   ROS2 Control   **************************** -->
+    <ros2_control name="GazeboSystem" type="system">
+      <hardware>
+        <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+      </hardware>
+
+      <joint name="Neck_Yaw">
+        <command_interface name="position"/>
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+      </joint>
+
+      <joint name="Neck_Pitch">
+        <command_interface name="position"/>
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+      </joint>
+
+      <joint name="TorsoShoulder_Left_Pitch">
+        <command_interface name="position"/>
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+      </joint>
+
+      <joint name="TorsoShoulder_Left_Roll">
+        <command_interface name="position"/>
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+      </joint>
+
+      <joint name="ShoulderElbow_Left">
+        <command_interface name="position"/>
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+      </joint>
+
+      <joint name="TorsoShoulder_Right_Pitch">
+        <command_interface name="position"/>
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+      </joint>
+
+      <joint name="TorsoShoulder_Right_Roll">
+        <command_interface name="position"/>
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+      </joint>
+
+      <joint name="ShoulderElbow_Right">
+        <command_interface name="position"/>
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+      </joint>
+
+      <joint name="TorsoThigh_Left_Pitch">
+        <command_interface name="position"/>
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+      </joint>
+
+      <joint name="TorsoThigh_Left_Yaw">
+        <command_interface name="position"/>
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+      </joint>
+
+      <joint name="ThighCalf_Left">
+        <command_interface name="position"/>
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+      </joint>
+
+      <joint name="CalfFoot_Left">
+        <command_interface name="position"/>
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+      </joint>
+
+      <joint name="TorsoThigh_Right_Pitch">
+        <command_interface name="position"/>
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+      </joint>
+
+      <joint name="TorsoThigh_Right_Yaw">
+        <command_interface name="position"/>
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+      </joint>
+
+      <joint name="ThighCalf_Right">
+        <command_interface name="position"/>
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+      </joint>
+
+      <joint name="CalfFoot_Right">
+        <command_interface name="position"/>
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+      </joint>
+
+    </ros2_control>
+
+    <gazebo>
+      <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
+        <parameters>$(find humanoid_robot)/config/controller_config.yaml</parameters>
+        <hold_joints>false</hold_joints>
+      </plugin>
+    </gazebo>
+
+    <!-- ****************************   Joint States   **************************** -->
+    <gazebo>
+      <plugin name="joint_state_publisher" filename="libgazebo_ros_joint_state_publisher.so">
+        <ros>
+          <namespace>/</namespace>
+          <remapping>joint_states:=/joint_states</remapping>
+        </ros>
+
+        <joint_name>Neck_Pitch</joint_name>
+        <joint_name>Neck_Yaw</joint_name>
+
+        <joint_name>TorsoShoulder_Left_Pitch</joint_name>
+        <joint_name>TorsoShoulder_Left_Roll</joint_name>
+        <joint_name>ShoulderElbow_Left</joint_name>
+
+        <joint_name>TorsoShoulder_Right_Pitch</joint_name>
+        <joint_name>TorsoShoulder_Right_Roll</joint_name>
+        <joint_name>ShoulderElbow_Right</joint_name>
+
+        <joint_name>TorsoThigh_Left_Pitch</joint_name>
+        <joint_name>TorsoThigh_Left_Yaw</joint_name>
+        <joint_name>ThighCalf_Left</joint_name>
+        <joint_name>CalfFoot_Left</joint_name>
+
+        <joint_name>TorsoThigh_Right_Pitch</joint_name>
+        <joint_name>TorsoThigh_Right_Yaw</joint_name>
+        <joint_name>ThighCalf_Right</joint_name>
+        <joint_name>CalfFoot_Right</joint_name>
+
+        <update_rate>50</update_rate>
+      </plugin>
+    </gazebo>
+
+    <!-- ****************************   Joint States   **************************** -->
+    <!-- IMU Ouput Definition -->
+    <gazebo reference="imu_link">
+        <gravity>true</gravity>
+        <sensor name="imu_sensor" type="imu">
+        <always_on>true</always_on>
+        <update_rate>100</update_rate>
+        <visualize>true</visualize>
+        <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
+            <bodyName>imu_link</bodyName>
+            <updateRateHZ>10.0</updateRateHZ>
+            <gaussianNoise>0.05</gaussianNoise>
+            <xyzOffset>0 0 0</xyzOffset>
+            <rpyOffset>0 0 0</rpyOffset>
+            <frameName>imu_link</frameName>
+            <initialOrientationAsReference>false</initialOrientationAsReference>
+        </plugin>
+        <pose>0 0 0 0 0 0</pose>
+        </sensor>
+    </gazebo> 
+
+  </xacro:macro>
+</robot>
+
+

@@ -19,20 +19,20 @@ namespace gazebo{
 
             ContactBridgePlugin () : WorldPlugin() {} // Call WorldPlugin Constructor
 
-        void Load(physics::WorldPtr _world, sdf::ElementPtr _sdf) override
-        {
-            // Initialize ROS 2 node for plugin and setup publisher
-            this->ros_node_ = gazebo_ros::Node::Get(_sdf);
-            this->pub_ = this->ros_node_->create_publisher<humanoid_robot::msg::Contacts>("contacts", 10);
+            void Load(physics::WorldPtr _world, sdf::ElementPtr _sdf) override
+            {
+                // Initialize ROS 2 node for plugin and setup publisher
+                this->ros_node_ = gazebo_ros::Node::Get(_sdf);
+                this->pub_ = this->ros_node_->create_publisher<humanoid_robot::msg::Contacts>("contacts", 10);
 
-            // Setup Gazebo transport
-            this->gz_node_ = transport::NodePtr(new transport::Node());
-            this->gz_node_->Init(_world->Name());
-            this->contact_sub_ = this->gz_node_->Subscribe("~/physics/contacts",
-                                &ContactBridgePlugin ::OnContacts, this);
+                // Setup Gazebo transport
+                this->gz_node_ = transport::NodePtr(new transport::Node());
+                this->gz_node_->Init(_world->Name());
+                this->contact_sub_ = this->gz_node_->Subscribe("~/physics/contacts",
+                                    &ContactBridgePlugin ::OnContacts, this);
 
-            RCLCPP_INFO(rclcpp::get_logger("ContactBridgePlugin"), "Subscribed to Gazebo contacts");
-        }
+                RCLCPP_INFO(rclcpp::get_logger("ContactBridgePlugin"), "Subscribed to Gazebo contacts");
+            }
 
         private:
             void OnContacts(ConstContactsPtr &gz_msg){

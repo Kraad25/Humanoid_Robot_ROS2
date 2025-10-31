@@ -2,8 +2,16 @@ add_library(contact_bridge_plugin SHARED
   contact_bridge_plugin.cpp
 )
 
+add_library(reset_joints_plugin SHARED
+  reset_joints_plugin.cpp
+)
+
 # Include the generated headers from msg
 target_include_directories(contact_bridge_plugin PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/../rosidl_generator_cpp>
+)
+
+target_include_directories(reset_joints_plugin PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/../rosidl_generator_cpp>
 )
 
@@ -11,11 +19,13 @@ target_include_directories(contact_bridge_plugin PUBLIC
 rosidl_get_typesupport_target(cpp_typesupport_target
   humanoid_robot "rosidl_typesupport_cpp")
 
-# Make sure the plugin depends on the generated message type library
+# Make sure the plugins depend on the generated message type library
 add_dependencies(contact_bridge_plugin ${cpp_typesupport_target})
+add_dependencies(reset_joints_plugin ${cpp_typesupport_target})
 
 # Link to the generated message library
 target_link_libraries(contact_bridge_plugin ${cpp_typesupport_target})
+target_link_libraries(reset_joints_plugin ${cpp_typesupport_target})
 
 # Find and link external dependencies
 find_package(rclcpp REQUIRED)
@@ -30,7 +40,14 @@ ament_target_dependencies(contact_bridge_plugin
   gazebo_msgs
 )
 
+ament_target_dependencies(reset_joints_plugin
+  rclcpp
+  std_msgs
+  gazebo_ros
+  gazebo_msgs
+)
+
 # Install
-install(TARGETS contact_bridge_plugin
+install(TARGETS contact_bridge_plugin reset_joints_plugin
   LIBRARY DESTINATION lib
 )

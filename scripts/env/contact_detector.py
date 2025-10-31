@@ -5,32 +5,38 @@ class ContactDetector:
         self.env = env
         self.game_over = False
         self.enable_detection = False
+        self.left_foot_contact = False
+        self.right_foot_contact = False
 
-        self.find_contacts = self.env.create_subscription(Contacts ,"/contacts", self._callback, 10)
+        self.subscription = self.env.create_subscription(Contacts, '/contacts', self._callback, 10)
 
     def _callback(self, msg):
-        if not self.enable_detection:
-            return
-        
         for contact in msg.states:
-            if "foot_right" in contact.info and "ground_plane" in contact.info:
-                self.env.right_foot_contact = True
-                continue
+            if "base_link" in contact.info and "ground_plane" in contact.info:
+                if self.enable_detection:
+                    self.game_over = True
+                    break
 
-            if "foot_left" in contact.info and "ground_plane" in contact.info:
-                self.env.left_foot_contact = True
-                continue
-            
-            if "ground_plane" in contact.info:
-                self.game_over = True
-                break
+            if self.enable_detection:
+                if "left_foot" in contact.info and "ground_plane" in contact.info:
+                    self.left_foot_contact = True
+                if "right_foot" in contact.info and "ground_plane" in contact.info:
+                    self.right_foot_contact = True
     
-    def set_enable_detection(self, enable):
-        self.enable_detection = enable
 
     def has_fallen(self):
         return self.game_over
     
+    def foot_contact(self):
+        return self.left_foot_contact, self.right_foot_contact
+    
+    def set_enable_detection(self, enable):
+        self.enable_detection = enable
+    
+    def reset_foot_contact(self):
+        self.left_foot_contact = False
+        self.right_foot_contact = False
+
     def reset(self):
         self.game_over = False
         self.enable_detection = False
