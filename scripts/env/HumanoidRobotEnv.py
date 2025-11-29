@@ -105,26 +105,19 @@ class HumanoidRobotEnv(gym.Env, Node):
         self.contact_detector.reset_foot_contact()
 
     def _compute_reward(self):
-        tilt_penalty = abs(self.tilt) * 10.0
-        tilt_rate_penalty = abs(self.tilt_rate) * 2.0
-        foot_bonus = 5.0 if self.left_foot_contact and self.right_foot_contact else 0.0
+        if self.tilt is None or self.tilt_rate is None:
+            return 0.0
+        
+        upright_bonus = np.cos(self.tilt)*5.0
+        smooth_bonus = max(0.0, 1.0 - abs(self.tilt_rate))*2.0
+        feet_bonus = 1.0 if self.left_foot_contact and self.right_foot_contact else 0.0
 
-        shaping = -(tilt_penalty + tilt_rate_penalty) + foot_bonus
-
-        reward = 0.0
-        if self.prev_shaping is not None:
-            reward = shaping - self.prev_shaping
-        self.prev_shaping = shaping
-
-        reward += 1.0 # Survival reward
-
-        if self.maxStep and self.current_step >= self.maxStep:
-            reward += 10.0
+        reward = upright_bonus + smooth_bonus + feet_bonus + 0.5
         if self._check_fallen():
-            reward -= 50.0
+            reward -= 10.0
 
         return reward
-    
+
     def _check_termination(self):
         terminated = self._check_fallen()
         if self.maxStep:
