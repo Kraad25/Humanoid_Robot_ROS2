@@ -36,7 +36,7 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(
             [os.path.join(get_package_share_directory('gazebo_ros'), 'launch'), '/gazebo.launch.py']),
             launch_arguments={'headless': LaunchConfiguration('headless-rendering'),
-                              'world': world_file, 'gui': 'true'}.items()  # 'verbose': 'true'
+                              'world': world_file, 'gui': 'true'}.items()  # , 'verbose': 'true'
     )
 
 
@@ -44,7 +44,12 @@ def generate_launch_description():
     spawn_entity = Node(
         package='gazebo_ros',
         executable='spawn_entity.py',
-        arguments=['-topic', '/robot_description', '-entity', 'Selene', '-x', '0', '-y', '0', '-z', '0'],  # Adjust the z value
+        arguments=[
+            '-topic', '/robot_description', 
+            '-entity', 'Selene', 
+            '-x', '0', '-y', '0', '-z', '0',   # Adjust the z value
+            '-timeout', '60'
+        ],
         output='screen'
     )
     
