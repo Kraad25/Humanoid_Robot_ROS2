@@ -6,3 +6,4 @@ pyyaml
 transforms3d
 lark
 empy==3.3.2
+llama-cpp-python

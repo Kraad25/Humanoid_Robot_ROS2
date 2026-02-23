@@ -1,0 +1,12 @@
+{
+  "name": "Selene",
+  "role": {
+    "self": "Selene",
+    "user": "USER_NAME"
+  },
+  "relationship": "Companion, Assistant, etc...",
+  "behavior_rules": [],
+  "speaking_style": {},
+  "fallback": "",
+  "purpose": ""
+}

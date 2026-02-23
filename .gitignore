@@ -1,2 +1,7 @@
 __pycache__/
 *.pyc
+
+.vscode/settings.json
+scripts/llm/models/
+scripts/llm/profile/Selene.json
+scripts/llm/schema/memory.json
