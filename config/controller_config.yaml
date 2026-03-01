@@ -44,10 +44,10 @@ gazebo_ros2_control:
         Neck_Pitch: {kp: 50.0, ki: 0.5, kd: 5.0, max_integral_error: 10000.0}
         TorsoShoulder_Left_Pitch: {kp: 100.0, ki: 1.0, kd: 10.0, max_integral_error: 10000.0}
         TorsoShoulder_Left_Roll: {kp: 100.0, ki: 1.0, kd: 10.0, max_integral_error: 10000.0}
-        ShoulderElbow_Left: {kp: 30.0, ki: 0, kd: 2.0, max_integral_error: 10000.0}
+        ShoulderElbow_Left: {kp: 30.0, ki: 0.0, kd: 2.0, max_integral_error: 10000.0}
         TorsoShoulder_Right_Pitch: {kp: 100.0, ki: 1.0, kd: 10.0, max_integral_error: 10000.0}
         TorsoShoulder_Right_Roll: {kp: 100.0, ki: 1.0, kd: 10.0, max_integral_error: 10000.0}
-        ShoulderElbow_Right: {kp: 30.0, ki: 0, kd: 2.0, max_integral_error: 10000.0}
+        ShoulderElbow_Right: {kp: 30.0, ki: 0.0, kd: 2.0, max_integral_error: 10000.0}
         TorsoThigh_Left_Pitch: {kp: 250.0, ki: 2.5, kd: 25.0, max_integral_error: 10000.0}
         TorsoThigh_Left_Yaw: {kp: 150.0, ki: 1.5, kd: 15.0, max_integral_error: 10000.0}
         ThighCalf_Left: {kp: 200.0, ki: 2.0, kd: 20.0, max_integral_error: 10000.0}

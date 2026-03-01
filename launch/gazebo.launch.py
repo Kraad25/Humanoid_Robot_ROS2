@@ -77,6 +77,13 @@ def generate_launch_description():
         executable='JointStateNode.py',
         output='screen')
     
+    # Gesture Node
+    GestureNode = Node(
+        package='humanoid_robot',
+        executable='GestureNode.py',
+        output='screen'
+    )
+    
     return LaunchDescription([
         DeclareLaunchArgument(name='headless-rendering', default_value='true', description='Set to "false" to run with GUI.'),
         gazebo,
@@ -85,4 +92,5 @@ def generate_launch_description():
         load_joint_controller,
         Imu,
         JointState,
+        GestureNode
     ])

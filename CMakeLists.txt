@@ -42,7 +42,7 @@ DESTINATION share/${PROJECT_NAME})
 install(DIRECTORY scripts/nodes/tests/sensor_bag
 DESTINATION share/${PROJECT_NAME}/tests )
 
-install(PROGRAMS scripts/nodes/ImuNode.py scripts/nodes/JointStateNode.py
+install(PROGRAMS scripts/nodes/ImuNode.py scripts/nodes/JointStateNode.py scripts/nodes/GestureNode.py
 DESTINATION lib/${PROJECT_NAME})
 
 ament_package()
