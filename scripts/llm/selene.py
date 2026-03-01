@@ -43,7 +43,7 @@ class Selene:
             "idle_chat": ["idle_hand_movement"],
             "confirmation": ["nod"],
             "question": ["head_tilt"],
-            "emotion_share": ["slow_nod"],
+            "emotion_share": ["nod"],
             "shutdown": ["lower_head"]
         }
 

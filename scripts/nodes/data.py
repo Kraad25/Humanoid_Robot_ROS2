@@ -9,11 +9,11 @@ DEFAULT_JOINT_POSITION_VALUES = [
     0.0,   # Neck_Yaw
     0.0,   # Neck_Pitch
     
-    0.1,   # TorsoShoulder_Left_Pitch (arms slightly forward)
+    0.0,   # TorsoShoulder_Left_Pitch (arms slightly forward)
     0.0,   # TorsoShoulder_Left_Roll
     0.0,   # ShoulderElbow_Left
 
-    0.1,   # TorsoShoulder_Right_Pitch
+    0.0,   # TorsoShoulder_Right_Pitch
     0.0,   # TorsoShoulder_Right_Roll
     0.0,   # ShoulderElbow_Right
 

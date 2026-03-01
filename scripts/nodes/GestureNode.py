@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 
 # Add this, (#!/usr/bin/env python3) at the top to prevent the error, Exec format error.
-import time
 import random
 
 import rclpy
 from rclpy.node import Node
+from rclpy.action import ActionClient
 
 from std_msgs.msg import String
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
+from control_msgs.action import FollowJointTrajectory
 from data import ALL_JOINTS, DEFAULT_JOINT_POSITION_VALUES
 
 class GestureNode(Node):
@@ -17,7 +18,15 @@ class GestureNode(Node):
         self.get_logger().info("GestureNode is running...")
 
         self.subscription = self.create_subscription(String, "/gesture_command", self.gesture_callback, 10)
-        self.publisher = self.create_publisher(JointTrajectory, '/joint_trajectory_controller/joint_trajectory', 10)
+        
+        # ActionClient
+        self._action_client = ActionClient(
+            self, FollowJointTrajectory, '/joint_trajectory_controller/follow_joint_trajectory'
+        )
+
+        self.get_logger().info("Waiting for trajectory server...")
+        self._action_client.wait_for_server()
+        self.get_logger().info("Trajectory server ready.")
 
         self.GESTURES = {
             "nod": self._perform_nod,
@@ -34,11 +43,16 @@ class GestureNode(Node):
     def gesture_callback(self, msg):
         gesture_name = msg.data
 
+        if self._current_state == "shutdown":
+            return  # ignore everything after shutdown
+
+        if self._current_state == "active":
+            self.get_logger().info("Busy, ignoring gesture")
+            return
+
         if gesture_name in self.GESTURES:
             self.get_logger().info(f"Executing gesture: {gesture_name}")
-            self._current_state = "active"
             self.GESTURES[gesture_name]()
-            self._current_state = "idle"
         else:
             self.get_logger().warn(f"Unknown gesture: {gesture_name}")
 
@@ -69,7 +83,37 @@ class GestureNode(Node):
 
             trajectory_msg.points.append(point)
 
-        self.publisher.publish(trajectory_msg)
+        self._current_state = "active"
+
+        goal_msg = FollowJointTrajectory.Goal()
+        goal_msg.trajectory = trajectory_msg
+
+        send_future = self._action_client.send_goal_async(goal_msg)
+        send_future.add_done_callback(self._goal_response_callback)
+
+    def _goal_response_callback(self, future):
+        goal_handle = future.result()
+
+        if not goal_handle.accepted:
+            self._current_state = "idle"
+            return
+
+        result_future = goal_handle.get_result_async()
+        result_future.add_done_callback(self._result_callback)
+
+    def _result_callback(self, future):
+        result = future.result().result
+
+        if result.error_code == 0:
+            self.get_logger().info("Motion completed successfully")
+        else:
+            self.get_logger().warn(
+                f"Motion failed with error code: {result.error_code}"
+            )
+
+        # Unlock only if not shutdown
+        if self._current_state != "shutdown":
+            self._current_state = "idle"
 
     def _idle_loop(self):
         if self._current_state == "idle":
@@ -172,8 +216,9 @@ class GestureNode(Node):
     def _perform_shutdown(self):
         self._send_trajectory([
             # Neck Down / Shutdown
-            ({"Neck_Pitch": 0.3}, 1.2),
+            ({"Neck_Pitch": 0.3}, 1.2)
         ])
+        self._current_state = "shutdown"
 
     def _idle_breath(self):
         self._send_trajectory([

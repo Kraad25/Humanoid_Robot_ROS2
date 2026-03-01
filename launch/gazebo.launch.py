@@ -78,9 +78,23 @@ def generate_launch_description():
         output='screen')
     
     # Gesture Node
-    GestureNode = Node(
+    Gesture = Node(
         package='humanoid_robot',
         executable='GestureNode.py',
+        output='screen'
+    )
+
+    # LLM Node
+    LLM = Node(
+        package='humanoid_robot',
+        executable='LLMNode.py',
+        output='screen'
+    )
+
+    # Behavior Manager Node
+    BehaviorManager = Node(
+        package='humanoid_robot',
+        executable='BehaviorManagerNode.py',
         output='screen'
     )
     
@@ -92,5 +106,7 @@ def generate_launch_description():
         load_joint_controller,
         Imu,
         JointState,
-        GestureNode
+        Gesture,
+        BehaviorManager,
+        LLM,
     ])
