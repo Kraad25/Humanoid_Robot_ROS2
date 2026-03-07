@@ -106,7 +106,7 @@ def generate_launch_description():
         load_joint_controller,
         Imu,
         JointState,
-        Gesture,
-        BehaviorManager,
-        LLM,
+        #Gesture,
+        #BehaviorManager,
+        #LLM,
     ])

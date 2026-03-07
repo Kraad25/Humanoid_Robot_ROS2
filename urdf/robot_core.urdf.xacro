@@ -577,8 +577,76 @@
             <origin xyz="0 0.01 0.6" rpy="0 0 0"/>
         </joint>
 
-        <gazebo>
-            <plugin name="fixed_base_support" filename="libfixed_base_support_plugin.so"/>
+
+        <!-- ****************************   Camera   **************************** -->
+        <!-- Camera Link -->
+        <link name="eye_left_link">
+        <inertial>
+            <mass value="0.01"/>
+            <origin xyz="0 0 0"/>
+            <inertia ixx="1e-6" ixy="0" ixz="0"
+                    iyy="1e-6" iyz="0"
+                    izz="1e-6"/>
+        </inertial>
+
+        <visual>
+            <geometry>
+                <sphere radius="0.003"/>
+            </geometry>
+            <origin xyz="0 0 0"/>
+        </visual>
+
+        <collision>
+            <geometry>
+                <sphere radius="0.003"/>
+            </geometry>
+            <origin xyz="0 0 0"/>
+        </collision>
+        </link>
+
+        <link name="eye_right_link">
+        <inertial>
+            <mass value="0.01"/>
+            <origin xyz="0 0 0"/>
+            <inertia ixx="1e-6" ixy="0" ixz="0"
+                    iyy="1e-6" iyz="0"
+                    izz="1e-6"/>
+        </inertial>
+
+        <visual>
+            <geometry>
+                <sphere radius="0.003"/>
+            </geometry>
+            <origin xyz="0 0 0"/>
+        </visual>
+
+        <collision>
+            <geometry>
+                <sphere radius="0.003"/>
+            </geometry>
+            <origin xyz="0 0 0"/>
+        </collision>
+        </link>
+
+        <!-- Camera Joint -->
+        <joint name="left_camera_joint" type="fixed">
+            <parent link="Head"/>
+            <child link="eye_left_link"/>
+            <origin xyz="0.035 -0.018 0.077" rpy="0 0 0"/>
+        </joint>
+
+        <joint name="right_camera_joint" type="fixed">
+            <parent link="Head"/>
+            <child link="eye_right_link"/>
+            <origin xyz="0.035 0.018 0.077" rpy="0 0 0"/>
+        </joint>
+
+        <gazebo reference="eye_left_link">
+            <material>Gazebo/Grey</material>
+        </gazebo>
+
+        <gazebo reference="eye_right_link">
+            <material>Gazebo/Grey</material>
         </gazebo>
     </xacro:macro>
 </robot>

@@ -145,12 +145,12 @@
       </plugin>
     </gazebo>
 
-    <!-- ****************************   Joint States   **************************** -->
+    <!-- ****************************   IMU Sensor   **************************** -->
     <!-- IMU Ouput Definition -->
     <gazebo reference="imu_link">
         <gravity>true</gravity>
         <sensor name="imu_sensor" type="imu">
-        <always_on>true</always_on>
+        <always_on>false</always_on>
         <update_rate>100</update_rate>
         <visualize>true</visualize>
         <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
@@ -166,7 +166,67 @@
         </sensor>
     </gazebo> 
 
+    <!-- Camera Plugin -->
+    <gazebo reference="eye_left_link">
+      <sensor name="left_eye_camera" type="camera">
+      <always_on>true</always_on>
+      <update_rate>15</update_rate>
+      <visualize>true</visualize>
+
+      <camera>
+      <horizontal_fov>1.047</horizontal_fov>
+      <image>
+          <width>320</width>
+          <height>240</height>
+          <format>R8G8B8</format>
+      </image>
+      <clip>
+          <near>0.05</near>
+          <far>10</far>
+      </clip>
+      </camera>
+      
+      <plugin name="gazebo_ros_camera_left" filename="libgazebo_ros_camera.so">
+          <camera_name>eye_left</camera_name>
+          <image_topic_name>image_raw</image_topic_name>
+          <camera_info_topic_name>camera_info</camera_info_topic_name>
+          <frame_name>eye_left_link</frame_name>
+      </plugin>
+      </sensor>
+    </gazebo>
+
+    <gazebo reference="eye_right_link">
+      <sensor name="right_eye_camera" type="camera">
+      <always_on>true</always_on>
+      <update_rate>15</update_rate>
+      <visualize>true</visualize>
+
+      <camera>
+      <horizontal_fov>1.047</horizontal_fov>
+      <image>
+          <width>320</width>
+          <height>240</height>
+          <format>R8G8B8</format>
+      </image>
+      <clip>
+          <near>0.05</near>
+          <far>10</far>
+      </clip>
+      </camera>
+      
+      <plugin name="gazebo_ros_camera_right" filename="libgazebo_ros_camera.so">
+          <camera_name>eye_right</camera_name>
+          <image_topic_name>image_raw</image_topic_name>
+          <camera_info_topic_name>camera_info</camera_info_topic_name>
+          <frame_name>eye_right_link</frame_name>
+      </plugin>
+      </sensor>
+    </gazebo>
+
+    <!-- Fixed Base Plugin -->
+    <gazebo>
+        <plugin name="fixed_base_support" filename="libfixed_base_support_plugin.so"/>
+    </gazebo>
+
   </xacro:macro>
 </robot>
-
-
