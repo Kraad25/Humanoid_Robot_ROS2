@@ -48,6 +48,7 @@ install(PROGRAMS
   scripts/nodes/GestureNode.py 
   scripts/nodes/ConversationNode.py
   scripts/nodes/BehaviorManagerNode.py
+  scripts/nodes/PerceptionNode.py
   scripts/llm/LLMNode.py
 DESTINATION lib/${PROJECT_NAME})
 
