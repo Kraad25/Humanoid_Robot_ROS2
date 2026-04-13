@@ -4,8 +4,11 @@
 import rclpy
 from rclpy.node import Node
 
+from geometry_msgs.msg import PoseStamped
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
+from tf2_ros import Buffer, TransformListener
+import tf2_geometry_msgs
 
 import cv2
 import numpy as np
@@ -16,6 +19,8 @@ class PerceptionNode(Node):
         self.get_logger().info("Perception Node Started")
 
         self.bridge = CvBridge()
+        self.tf_buffer = Buffer()
+        self.tf_listener = TransformListener(self.tf_buffer, self)
 
         self.left_frame = None
         self.right_frame = None
@@ -41,16 +46,103 @@ class PerceptionNode(Node):
             self.right_callback,
             10
         )
+        self.pose_publisher = self.create_publisher(
+            PoseStamped,
+            "/cube_pose",
+            10
+        )
 
+    # Public Methods
     def left_callback(self, msg):
         self.left_frame = self.bridge.imgmsg_to_cv2(msg, 'bgr8')
-        self.process()
+        self._process()
 
     def right_callback(self, msg):
         self.right_frame = self.bridge.imgmsg_to_cv2(msg, 'bgr8')
-        self.process()
+        self._process()
 
-    def detect_object(self, frame):
+    # Private Methods  
+    def _process(self):
+        if self.left_frame is None or self.right_frame is None:
+            return
+
+        left_center = self._detect_object(self.left_frame)
+        right_center = self._detect_object(self.right_frame)
+
+        if left_center is None or right_center is None:
+            return
+
+        xL, yL = left_center
+        xR, yR = right_center
+
+        depth = self._compute_depth(xL, xR)
+
+        if depth is None:
+            return
+
+        X, Y, Z = self._pixel_to_3d(xL, yL, depth)
+
+        pose = PoseStamped()
+
+        pose.header.frame_id = "eye_left_link"
+        pose.header.stamp = self.get_clock().now().to_msg()
+
+        pose.pose.position.x = float(X)
+        pose.pose.position.y = float(Y)
+        pose.pose.position.z = float(Z)
+
+        pose.pose.orientation.w = 1.0
+
+        # Position with respect to the base_link
+        try:
+            transform = self.tf_buffer.lookup_transform(
+                "base_link",              # target frame
+                "eye_left_link",          # source frame
+                rclpy.time.Time()
+            )
+
+            pose_in_base = tf2_geometry_msgs.do_transform_pose(pose.pose, transform)
+
+            pose_out = PoseStamped()
+            pose_out.header.frame_id = "base_link"
+            pose_out.header.stamp = self.get_clock().now().to_msg()
+            pose_out.pose = pose_in_base
+
+            self.pose_publisher.publish(pose_out)
+
+        except Exception as e:
+            self.get_logger().warn(f"TF transform failed: {e}")
+
+        self._find_distance(pose_out)
+
+    def _find_distance(self, cube_pose):
+        xc = cube_pose.pose.position.x
+        yc = cube_pose.pose.position.y
+        zc = cube_pose.pose.position.z
+
+        try:
+            transform = self.tf_buffer.lookup_transform(
+                "base_link",
+                "Palm_Left",
+                rclpy.time.Time()
+            )
+        except Exception as e:
+            self.get_logger().warn(f"TF failed: {e}")
+            return
+
+        xp = transform.transform.translation.x
+        yp = transform.transform.translation.y
+        zp = transform.transform.translation.z
+
+        dx = xc-xp
+        dy = yc-yp
+        dz = zc-zp
+
+        distance = np.sqrt(dx*dx+ dy*dy + dz*dz)
+
+        #self.get_logger().info(f"Distance: {distance:.3f} m")
+    
+    def _detect_object(self, frame):
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
         lower_red1 = np.array([0,120,70])
@@ -64,7 +156,7 @@ class PerceptionNode(Node):
 
         mask = mask1 + mask2
 
-        contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)    
 
         if len(contours) == 0:
             return None
@@ -72,16 +164,20 @@ class PerceptionNode(Node):
         largest = max(contours, key=cv2.contourArea)
 
         M = cv2.moments(largest)
+        total_area = M["m00"]
 
-        if M["m00"] == 0:
+        if total_area == 0:
             return None
 
-        cx = int(M["m10"] / M["m00"])
-        cy = int(M["m01"] / M["m00"])
+        sum_of_x = M["m10"]
+        sum_of_y = M["m01"]
+
+        cx = int(sum_of_x / total_area) # Average x of all the pixels
+        cy = int(sum_of_y / total_area) # Average y of all the pixels
 
         return (cx, cy)
 
-    def compute_depth(self, x_left, x_right):
+    def _compute_depth(self, x_left, x_right):
         disparity = abs(x_left - x_right)
 
         if disparity == 0:
@@ -91,43 +187,12 @@ class PerceptionNode(Node):
 
         return depth
 
-    def process(self):
-        if self.left_frame is None or self.right_frame is None:
-            return
+    def _pixel_to_3d(self, x, y, depth):
 
-        left_center = self.detect_object(self.left_frame)
-        right_center = self.detect_object(self.right_frame)
-
-        if left_center is None or right_center is None:
-            return
-
-        xL, yL = left_center
-        xR, yR = right_center
-
-        depth = self.compute_depth(xL, xR)
-
-        if depth is None:
-            return
-
-        X, Y, Z = self.pixel_to_3d(xL, yL, depth)
-
-        self.get_logger().info(
-            f"Cube position (camera frame): X={X:.2f} Y={Y:.2f} Z={Z:.2f}"
-        )
-
-        cv2.circle(self.left_frame, (xL, yL), 1, (0,255,0), -1)
-        cv2.circle(self.right_frame, (xR, yR), 1, (0,255,0), -1)
-
-        cv2.imshow("Left", self.left_frame)
-        cv2.imshow("Right", self.right_frame)
-
-        cv2.waitKey(1)
-
-    def pixel_to_3d(self, x, y, depth):
-
-        X = (x - self.cx) * depth / self.fx
-        Y = (y - self.cy) * depth / self.fy
-        Z = depth
+        # Co-ordinate axes are different, Thus
+        X = depth
+        Y = - ((x - self.cx) * depth / self.fx)
+        Z = - ((y - self.cy) * depth / self.fy)
 
         return X, Y, Z
 

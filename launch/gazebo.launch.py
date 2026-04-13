@@ -69,14 +69,24 @@ def generate_launch_description():
     Imu = Node(
         package='humanoid_robot',
         executable='ImuNode.py',
-        output='screen')  
+        output='screen'
+    )  
     
     # Joint State Node
     JointState = Node(
         package='humanoid_robot',
         executable='JointStateNode.py',
-        output='screen')
+        output='screen'
+    )
     
+    # Perception Node
+    Perception = Node(
+        package='humanoid_robot',
+        executable='PerceptionNode.py',
+        output='screen',
+        parameters=[{'use_sim_time': True}]
+    )
+
     # Gesture Node
     Gesture = Node(
         package='humanoid_robot',
@@ -97,6 +107,13 @@ def generate_launch_description():
         executable='BehaviorManagerNode.py',
         output='screen'
     )
+
+    # Pick and Place Node
+    PickandPlace = Node(
+        package='humanoid_robot',
+        executable='PickandPlaceNode.py',
+        output='screen'
+    )
     
     return LaunchDescription([
         DeclareLaunchArgument(name='headless-rendering', default_value='true', description='Set to "false" to run with GUI.'),
@@ -106,6 +123,8 @@ def generate_launch_description():
         load_joint_controller,
         Imu,
         JointState,
+        Perception,
+        PickandPlace,
         #Gesture,
         #BehaviorManager,
         #LLM,

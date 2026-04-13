@@ -49,6 +49,7 @@ install(PROGRAMS
   scripts/nodes/ConversationNode.py
   scripts/nodes/BehaviorManagerNode.py
   scripts/nodes/PerceptionNode.py
+  scripts/nodes/PickandPlaceNode.py
   scripts/llm/LLMNode.py
 DESTINATION lib/${PROJECT_NAME})
 

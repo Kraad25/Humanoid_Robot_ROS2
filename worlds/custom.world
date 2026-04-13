@@ -60,12 +60,12 @@
 
     <model name="table">
       <static>true</static>
-      <pose>1.2 0 0.3 0 0 0</pose>
+      <pose>0.35 0 0.3 0 0 0</pose>
       <link name="table_link">
         <collision name="collision">
           <geometry>
             <box>
-              <size>0.8 0.6 0.6</size>
+              <size>0.4 0.6 0.7</size>
             </box>
           </geometry>
         </collision>
@@ -73,7 +73,7 @@
         <visual name="visual">
           <geometry>
             <box>
-              <size>0.8 0.6 0.6</size>
+              <size>0.4 0.6 0.7</size>
             </box>
           </geometry>
 
@@ -87,13 +87,13 @@
 
     <model name="red_cube">
       <static>false</static>
-      <pose>1.2 0.15 0.64 0 0 0</pose>
+      <pose>0.18 -0.12 0.64 0 0 0</pose>
 
       <link name="cube_link">
         <collision name="collision">
           <geometry>
             <box>
-              <size>0.08 0.08 0.08</size>
+              <size>0.02 0.02 0.05</size>
             </box>
           </geometry>
         </collision>
@@ -101,7 +101,7 @@
         <visual name="visual">
           <geometry>
             <box>
-              <size>0.08 0.08 0.08</size>
+              <size>0.02 0.02 0.05</size>
             </box>
           </geometry>
 
