@@ -34,23 +34,12 @@ class PerceptionNode(Node):
         self.cx = 160.5
         self.cy = 120.5
 
-        self.left_eye_subscription = self.create_subscription(
-            Image,
-            '/eye_left/image_raw',
-            self.left_callback,
-            10
-        )
-        self.right_eye_subscription = self.create_subscription(
-            Image,
-            '/eye_right/image_raw',
-            self.right_callback,
-            10
-        )
-        self.pose_publisher = self.create_publisher(
-            PoseStamped,
-            "/cube_pose",
-            10
-        )
+        # Subscriptions
+        self.left_eye_subscription = self.create_subscription(Image, '/eye_left/image_raw', self.left_callback, 10)
+        self.right_eye_subscription = self.create_subscription(Image, '/eye_right/image_raw', self.right_callback, 10)
+
+        # Publishers
+        self.pose_publisher = self.create_publisher(PoseStamped, "/cube_pose", 10)
 
     # Public Methods
     def left_callback(self, msg):
@@ -113,34 +102,6 @@ class PerceptionNode(Node):
         except Exception as e:
             self.get_logger().warn(f"TF transform failed: {e}")
 
-        self._find_distance(pose_out)
-
-    def _find_distance(self, cube_pose):
-        xc = cube_pose.pose.position.x
-        yc = cube_pose.pose.position.y
-        zc = cube_pose.pose.position.z
-
-        try:
-            transform = self.tf_buffer.lookup_transform(
-                "base_link",
-                "Palm_Left",
-                rclpy.time.Time()
-            )
-        except Exception as e:
-            self.get_logger().warn(f"TF failed: {e}")
-            return
-
-        xp = transform.transform.translation.x
-        yp = transform.transform.translation.y
-        zp = transform.transform.translation.z
-
-        dx = xc-xp
-        dy = yc-yp
-        dz = zc-zp
-
-        distance = np.sqrt(dx*dx+ dy*dy + dz*dz)
-
-        #self.get_logger().info(f"Distance: {distance:.3f} m")
     
     def _detect_object(self, frame):
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)

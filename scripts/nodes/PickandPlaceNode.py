@@ -3,17 +3,20 @@
 import rclpy
 from rclpy.node import Node
 from rclpy.action import ActionClient
-from gazebo_msgs.srv import SetEntityState
+
+import math
+import tf_transformations as tft
+from tf2_ros import Buffer, TransformListener
 
 from std_msgs.msg import String
+from std_msgs.msg import Float32
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 from control_msgs.action import FollowJointTrajectory
+from geometry_msgs.msg import PoseStamped
 
-from tf2_ros import Buffer, TransformListener
-import tf_transformations as tft
+from gazebo_msgs.srv import SetEntityState
 
 from data import ALL_JOINTS, DEFAULT_JOINT_POSITION_VALUES
-
 
 class MotionNode(Node):
     def __init__(self):
@@ -22,11 +25,7 @@ class MotionNode(Node):
 
         self.tf_buffer = Buffer()
         self.tf_listener = TransformListener(self.tf_buffer, self)
-
         self.set_state_client = self.create_client(SetEntityState, '/set_entity_state')
-
-        self.subscription = self.create_subscription(String, "/motion_command", self.command_callback, 10)
-
         self._action_client = ActionClient(
             self,
             FollowJointTrajectory,
@@ -37,18 +36,30 @@ class MotionNode(Node):
         self._action_client.wait_for_server()
         self.get_logger().info("Trajectory server ready.")
 
+        # Subscriptions
+        self.input_subscription = self.create_subscription(String, "/motion_command", self.command_callback, 10)
+        self.cube_pose = self.create_subscription(PoseStamped, "/cube_pose",self.cubePose_callback, 10)
+
+        # Publisher
+        self.distance_pub = self.create_publisher(Float32, "/distance", 10)
+
+        # Timers
+        self.startup_timer = self.create_timer(2.0, self._startup_motion)
+        self.timer = self.create_timer(0.005, self._update_grab)
+
         self.COMMANDS = {
             "home": self._home,
             "look_down": self._look_down,
-            "look_down_pick": self._look_down_pick,
             "extend_forward": self._extend_forward,
-            "elbow_extend": self._extend_forward_elbowbent,
             "grab": self._grab,
             "release": self.release,
         }
 
-        self.grasped = False
-        self.timer = self.create_timer(0.005, self._update_grab)
+        # Grabbing
+        self.current_positions = list(DEFAULT_JOINT_POSITION_VALUES)
+        self._grasped = False
+        self._distance = None
+        self.pick_timer = None
 
     def command_callback(self, msg):
         cmd = msg.data.strip()
@@ -59,69 +70,125 @@ class MotionNode(Node):
         else:
             self.get_logger().warn(f"Unknown command: {cmd}")
 
-    def _send_trajectory(self, keyframes):
+    def cubePose_callback(self, msg):
+        self._find_distance(msg)
+
+    def _startup_motion(self):
+        self.get_logger().info("Starting initial motion...")
+        self._look_down()
+        self.startup_timer.cancel()
+
+    def _find_distance(self, cube_pose):
+        xc = cube_pose.pose.position.x
+        yc = cube_pose.pose.position.y
+        zc = cube_pose.pose.position.z
+
+        try:
+            transform = self.tf_buffer.lookup_transform(
+                "base_link",
+                "Palm_Left",
+                rclpy.time.Time()
+            )
+        except Exception as e:
+            self.get_logger().warn(f"TF failed: {e}")
+            return
+
+        xp = transform.transform.translation.x
+        yp = transform.transform.translation.y
+        zp = transform.transform.translation.z
+
+        dx = xc-xp
+        dy = yc-yp
+        dz = zc-zp
+
+        distance = math.sqrt(dx*dx+ dy*dy + dz*dz)
+        self._distance = distance
+        self.distance_pub.publish(Float32(data=distance))
+
+
+    # Trajectory commands
+    def _home(self):
+        joint_dict = {}
+
+        for i, joint in enumerate(ALL_JOINTS):
+            joint_dict[joint] = DEFAULT_JOINT_POSITION_VALUES[i]
+
+        self._send_trajectory([
+            (joint_dict, 2.0)
+        ])
+
+    def _move_to_target(self, target_dict, duration=2.0, steps=10):
+        current = list(self.current_positions)
+        target = list(current)
+
+        for joint, value in target_dict.items():
+            if joint in ALL_JOINTS:
+                index = ALL_JOINTS.index(joint)
+                target[index] = value
+
         traj = JointTrajectory()
         traj.joint_names = ALL_JOINTS
 
-        cumulative_time = 0.0
+        intermediate_points = []
 
-        for joint_dict, duration in keyframes:
-            cumulative_time += duration
+        for i in range(1, steps+1):
+            time = i/steps
 
+            s = 3*(time**2) - 2*(time**3) # A cubic function which goes from 0 to 1 smoothly. 3t^2 - 2t^3.
+
+            positions = []
+
+            for j in range(len(current)):
+                pos = current[j] + s * (target[j] - current[j])
+                positions.append(pos)
+            
+            time_from_start = duration * time            
             point = JointTrajectoryPoint()
+            
+            point.positions = positions            
+            point.time_from_start.sec = int(time_from_start)
+            point.time_from_start.nanosec = int((time_from_start % 1) * 1e9)
 
-            if traj.points:
-                positions = list(traj.points[-1].positions)
-            else:
-                positions = list(DEFAULT_JOINT_POSITION_VALUES)
+            intermediate_points.append(point)
 
-            for joint, value in joint_dict.items():
-                if joint in traj.joint_names:
-                    idx = traj.joint_names.index(joint)
-                    positions[idx] = value
-
-            point.positions = positions
-            point.time_from_start.sec = int(cumulative_time)
-            point.time_from_start.nanosec = int((cumulative_time % 1) * 1e9)
-
-            traj.points.append(point)
-
-        goal = FollowJointTrajectory.Goal()
+        traj.points = intermediate_points
+        goal = FollowJointTrajectory.Goal() 
         goal.trajectory = traj
 
-        self._action_client.send_goal_async(goal)
-
-    def _home(self):
-        self._send_trajectory([
-            ({}, 2.0)  # default position
-        ])
+        self._action_client.send_goal_async(goal)   
+        self.current_positions = target
 
     def _look_down(self):
-        self._send_trajectory([
-            ({"Neck_Pitch": 0.0}, 0.5),
-            ({"Neck_Pitch": 0.05}, 0.5),
-            ({"Neck_Pitch": 0.1}, 0.5),
-            ({"Neck_Pitch": 0.15}, 0.5),
-            ({"Neck_Pitch": 0.20}, 0.5),
-            ({"Neck_Pitch": 0.25}, 0.5),
-            ({"Neck_Pitch": 0.3}, 0.5),
-            ({"Neck_Pitch": 0.35}, 0.5),
-            ({"Neck_Pitch": 0.4}, 0.5),
-            ({"Neck_Pitch": 0.45}, 0.5),
-            ({"Neck_Pitch": 0.5}, 0.5),
-            ({"Neck_Yaw": -0.6}, 0.5),
+        self._move_to_target({
+            "Neck_Pitch": 0.5,
+            "Neck_Yaw": -0.6            
+        })
+
+    def _extend_forward(self):
+        self._move_to_target(
+            {
+            "TorsoShoulder_Left_Pitch": -1.5,
+            "ShoulderElbow_Left": 0.0
+        })
+
+    def _grab(self):
+        if self._distance is None:
+            self.get_logger().warn("No distance yet")
+            return
+        
+        if self._distance is not 0.0 and self._distance <= 0.5:
+
+            self._get_close()
+            if self.pick_timer is not None:
+                self.pick_timer.cancel()
+
+            self.pick_timer = self.create_timer(9.0, self._pick_up)
             
-        ])
+        else:
+            self.get_logger().warn("Too Far")
 
-    
-    def _look_down_pick(self):
+    def _get_close(self):
         self._send_trajectory([
-            ({"Neck_Pitch": 0.20}, 0.5),
-            ({"Neck_Pitch": 0.25}, 0.5),
-            ({"Neck_Pitch": 0.3}, 0.5),
-            ({"Neck_Pitch": 0.5}, 0.5),
-            ({"Neck_Yaw": -0.6}, 0.5),
-
             ({"ShoulderElbow_Left": -0.4363325,}, 0.5),
             ({"ShoulderElbow_Left": -0.872665,}, 0.5),
             ({"ShoulderElbow_Left": -1.35,}, 0.5),
@@ -129,36 +196,13 @@ class MotionNode(Node):
 
             ({"TorsoShoulder_Left_Pitch": -0.5,}, 0.5),            
 
-            ({"ShoulderElbow_Left": -1.3,}, 0.5),
+            ({"ShoulderElbow_Left": -1.15,}, 0.5),
 
         ])
 
-    def _extend_forward(self):
-        self._send_trajectory([
-            ({"TorsoShoulder_Left_Pitch": 0.349066,}, 0.5),
-            ({"TorsoShoulder_Left_Pitch": 0.0,}, 0.5),
-            ({"TorsoShoulder_Left_Pitch": -1.04719,}, 0.5),
-            ({"TorsoShoulder_Left_Pitch": -2.09438,}, 0.5),
-            ({"TorsoShoulder_Left_Pitch": -3.00,}, 0.5),
-        ])
-
-    def _extend_forward_elbowbent(self):
-        self._send_trajectory([
-            ({"ShoulderElbow_Left": 0.349066,}, 0.5),
-            ({"ShoulderElbow_Left": 0.349066,}, 0.5),
-            ({"ShoulderElbow_Left": -0.4363325,}, 0.5),
-            ({"ShoulderElbow_Left": -0.872665,}, 0.5),
-            ({"ShoulderElbow_Left": -1.35,}, 0.5),
-            ({"ShoulderElbow_Left": -1.7,}, 0.5),
-
-            ({"TorsoShoulder_Left_Pitch": -1.04719,}, 0.5),
-            ({"TorsoShoulder_Left_Pitch": -2.09438,}, 0.5),
-            ({"TorsoShoulder_Left_Pitch": -3.00,}, 0.5),
-        ])
-
-    def _grab(self):
-        self.grasped = True
-        
+    def _pick_up(self):
+        self._grasped = True
+            
         req = SetEntityState.Request()
         req.state.name = "red_cube"
 
@@ -173,12 +217,15 @@ class MotionNode(Node):
         req.state.twist.angular.z = 0.0
 
         self.set_state_client.call_async(req)
+        
+        self.pick_timer.cancel()
+        self.pick_timer = None
 
     def _update_grab(self):
-        if not self.grasped:
+        if not self._grasped:
             return
         
-        try:
+        try:    
             palm = self.tf_buffer.lookup_transform(
                 "base_link",
                 "Palm_Left",
@@ -208,7 +255,7 @@ class MotionNode(Node):
         offset = 0.015
         req.state.pose.position.x = xp + offset
         req.state.pose.position.y = yp
-        req.state.pose.position.z = zp - 0.01
+        req.state.pose.position.z = zp - offset
 
         req.state.twist.linear.x = 0.0
         req.state.twist.linear.y = 0.0
@@ -226,7 +273,37 @@ class MotionNode(Node):
         self.set_state_client.call_async(req)        
 
     def release(self):
-        self.grasped = False
+        self._grasped = False
+
+    def _send_trajectory(self, keyframes):
+        traj = JointTrajectory()
+        traj.joint_names = ALL_JOINTS
+
+        cumulative_time = 0.0
+
+        for joint_dict, duration in keyframes:
+            cumulative_time += duration
+
+            point = JointTrajectoryPoint()
+
+            positions = list(self.current_positions)
+
+            for joint, value in joint_dict.items():
+                if joint in traj.joint_names:
+                    idx = traj.joint_names.index(joint)
+                    positions[idx] = value
+
+            point.positions = positions
+            point.time_from_start.sec = int(cumulative_time)
+            point.time_from_start.nanosec = int((cumulative_time % 1) * 1e9)
+
+            traj.points.append(point)
+            self.current_positions = positions
+
+        goal = FollowJointTrajectory.Goal()
+        goal.trajectory = traj
+
+        self._action_client.send_goal_async(goal)
 
 if __name__ == "__main__":
     rclpy.init()
